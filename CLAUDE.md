@@ -19,8 +19,8 @@ If anything here conflicts with a spec, the spec wins; flag the conflict.
 ## Stack (confirmed direction)
 - **Next.js (App Router) + TypeScript.**
 - **Tailwind CSS** + a headless component base (shadcn/Radix) for accessible primitives.
-- **Supabase** (PostgreSQL + Auth + Storage) in an **EU/UK region** (data residency).
-- **Vercel** for hosting/edge (or a UK-compliant equivalent).
+- **Supabase** (PostgreSQL + Auth + Storage) in the **London region (`eu-west-2`)** — where all counsel personal data resides (data residency, D2).
+- **Vercel** for hosting/edge in the **Dublin region (`dub1`)**.
 - Fonts: **Spectral** (display), **Inter** (UI), **IBM Plex Mono** (meta).
 
 ## Core architecture — do not deviate without asking
