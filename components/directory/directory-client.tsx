@@ -19,6 +19,7 @@ import { FilterSheet } from "./filter-sheet";
 import { ActiveFilterChips } from "./active-filter-chips";
 import { CardGrid } from "./card-grid";
 import { EmptyState } from "./empty-state";
+import { EnquirySheet } from "@/components/profile/enquiry-sheet";
 
 function describeReason(criteria: DirectoryCriteria, filters: DirectoryFilters): string {
   const levels = criteria.levels
@@ -75,6 +76,12 @@ export function DirectoryClient({ payload }: { payload: DirectoryPayload }) {
     [payload.counsel, liveCriteria],
   );
 
+  const [enquiryOpen, setEnquiryOpen] = React.useState(false);
+  const caseTypes = React.useMemo(
+    () => payload.filters.practiceAreas.map((a) => ({ value: a.name, label: a.name })),
+    [payload.filters.practiceAreas],
+  );
+
   return (
     <div className="mx-auto w-full max-w-[1240px] px-4 sm:px-6 lg:px-8">
       <header className="sticky top-0 z-10 -mx-4 flex items-center gap-3 border-b border-line bg-paper/90 px-4 py-3 backdrop-blur-sm sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
@@ -118,10 +125,16 @@ export function DirectoryClient({ payload }: { payload: DirectoryPayload }) {
           {results.length > 0 ? (
             <CardGrid counsel={results} />
           ) : (
-            <EmptyState reason={describeReason(liveCriteria, payload.filters)} onClearAll={clearAll} />
+            <EmptyState
+              reason={describeReason(liveCriteria, payload.filters)}
+              onClearAll={clearAll}
+              onContactClerks={() => setEnquiryOpen(true)}
+            />
           )}
         </div>
       </div>
+
+      <EnquirySheet open={enquiryOpen} onOpenChange={setEnquiryOpen} caseTypes={caseTypes} />
     </div>
   );
 }

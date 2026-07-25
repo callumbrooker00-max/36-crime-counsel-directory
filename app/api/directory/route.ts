@@ -15,7 +15,14 @@ export async function GET(request: Request) {
   }
 
   const body = JSON.stringify(payload);
-  const etag = `"${createHash("sha1").update(body).digest("hex")}"`;
+  // ETag reflects meaningful content, not the generatedAt timestamp — so a
+  // conditional GET yields 304 whenever the directory data is unchanged.
+  const signature = JSON.stringify({
+    chambers: payload.chambers,
+    filters: payload.filters,
+    counsel: payload.counsel,
+  });
+  const etag = `"${createHash("sha1").update(signature).digest("hex")}"`;
 
   if (request.headers.get("if-none-match") === etag) {
     return new Response(null, { status: 304, headers: { etag } });
