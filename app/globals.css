@@ -1,39 +1,122 @@
 @import "tailwindcss";
 
 /*
-  Slice 1: only the core tokens needed to render the shell on-brand.
-  The full design-token set (components.md §1) lands in slice 2.
+  Design tokens — components.md §1. Tailwind v4 CSS-first theme: every value
+  here becomes both a utility (bg-ink, text-md, rounded-card…) and a runtime
+  CSS variable (var(--color-ink)…). One system, two densities, one accent.
 */
-:root {
-  --paper: #f5f5f2; /* cool neutral app background — deliberately not cream */
-  --card: #fcfcfb;
-  --ink: #17171b;
-  --ink-2: #55555e;
-  --ink-3: #8a8a92;
-  --line: #e4e3de;
-  --ribbon: #a81c30; /* the accent — brief-ribbon red; rationed to one focal thing per view */
-}
+@theme {
+  /* ---- Colour ---- */
+  --color-ink: #17171b; /* primary text */
+  --color-ink-2: #55555e; /* secondary text */
+  --color-ink-3: #8a8a92; /* tertiary / captions */
+  --color-paper: #f5f5f2; /* app background — cool neutral, not cream */
+  --color-card: #fcfcfb; /* card / surface */
+  --color-line: #e4e3de; /* hairline borders */
+  --color-line-2: #efeeea; /* subtle dividers */
+  --color-neutral-100: #f0efec;
+  --color-neutral-200: #e6e5e0;
+  --color-neutral-300: #d9d8d2;
+  --color-neutral-400: #cbcac3;
+  --color-ribbon: #a81c30; /* THE accent — brief-ribbon red; one focal thing per view */
+  --color-ribbon-hover: #8f1728;
+  --color-ribbon-active: #7c1423;
+  --color-ribbon-soft: #f1dde0; /* accent wash — active pill fill, focus tint */
+  --color-focus: rgba(168, 28, 48, 0.4); /* focus ring — ribbon @ 40% */
 
-@theme inline {
-  --color-paper: var(--paper);
-  --color-card: var(--card);
-  --color-ink: var(--ink);
-  --color-ink-2: var(--ink-2);
-  --color-ink-3: var(--ink-3);
-  --color-line: var(--line);
-  --color-ribbon: var(--ribbon);
+  /* ---- Type ---- */
   --font-sans: var(--font-inter);
   --font-serif: var(--font-spectral);
   --font-mono: var(--font-ibm-plex-mono);
+  /* Scale (components.md §1.2). Headings tighten as they grow. */
+  --text-xs: 0.75rem;
+  --text-xs--line-height: 1.5;
+  --text-sm: 0.8125rem;
+  --text-sm--line-height: 1.5;
+  --text-base: 0.9375rem;
+  --text-base--line-height: 1.55;
+  --text-md: 1rem;
+  --text-md--line-height: 1.55;
+  --text-lg: 1.1875rem;
+  --text-lg--line-height: 1.4;
+  --text-xl: 1.5rem;
+  --text-xl--line-height: 1.2;
+  --text-2xl: 2rem;
+  --text-2xl--line-height: 1.1;
+  --text-3xl: 2.5rem;
+  --text-3xl--line-height: 1.1;
+
+  /* ---- Radius ---- (pills/badges use rounded-full) */
+  --radius-control: 8px; /* inputs, buttons */
+  --radius-card: 14px; /* cards, surfaces */
+
+  /* ---- Elevation ---- one soft shadow, reserved for overlays */
+  --shadow-overlay: 0 1px 2px rgba(23, 23, 27, 0.04), 0 8px 30px rgba(23, 23, 27, 0.06);
+
+  /* ---- Motion easings ---- */
+  --ease-out-soft: cubic-bezier(0.2, 0, 0, 1);
+  --ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Motion durations — referenced via arbitrary values, e.g. duration-[var(--motion-ui)] */
+:root {
+  --motion-micro: 110ms; /* hover, toggle, tick */
+  --motion-ui: 180ms; /* enters, cross-fades */
+  --motion-reflow: 180ms; /* filter result reflow (FLIP) */
+  --motion-sheet: 260ms; /* sheets / overlays */
 }
 
 body {
-  background: var(--paper);
-  color: var(--ink);
+  background: var(--color-paper);
+  color: var(--color-ink);
   font-family: var(--font-inter), system-ui, sans-serif;
 }
 
-/* prefers-reduced-motion respected from the first commit (quality floor). */
+/* ---------- keyframes ---------- */
+@keyframes overlay-in { from { opacity: 0 } to { opacity: 1 } }
+@keyframes overlay-out { from { opacity: 1 } to { opacity: 0 } }
+@keyframes sheet-in-right { from { transform: translateX(100%) } to { transform: translateX(0) } }
+@keyframes sheet-out-right { from { transform: translateX(0) } to { transform: translateX(100%) } }
+@keyframes sheet-in-bottom { from { transform: translateY(100%) } to { transform: translateY(0) } }
+@keyframes sheet-out-bottom { from { transform: translateY(0) } to { transform: translateY(100%) } }
+@keyframes toast-in { from { transform: translateY(120%); opacity: 0 } to { transform: translateY(0); opacity: 1 } }
+@keyframes toast-out { from { opacity: 1 } to { opacity: 0 } }
+@keyframes skeleton-shimmer { 100% { transform: translateX(100%) } }
+@keyframes spin { to { transform: rotate(360deg) } }
+
+/* ---------- Sheet (Radix Dialog) ---------- */
+.sheet-overlay[data-state="open"] { animation: overlay-in var(--motion-ui) var(--ease-out-soft) }
+.sheet-overlay[data-state="closed"] { animation: overlay-out var(--motion-ui) var(--ease-out-soft) }
+.sheet-right[data-state="open"] { animation: sheet-in-right var(--motion-sheet) var(--ease-spring) }
+.sheet-right[data-state="closed"] { animation: sheet-out-right var(--motion-ui) var(--ease-out-soft) }
+.sheet-bottom[data-state="open"] { animation: sheet-in-bottom var(--motion-sheet) var(--ease-spring) }
+.sheet-bottom[data-state="closed"] { animation: sheet-out-bottom var(--motion-ui) var(--ease-out-soft) }
+
+/* ---------- Toast (Radix Toast) ---------- */
+.toast-root[data-state="open"] { animation: toast-in var(--motion-sheet) var(--ease-spring) }
+.toast-root[data-state="closed"] { animation: toast-out var(--motion-ui) var(--ease-out-soft) }
+.toast-root[data-swipe="move"] { transform: translateX(var(--radix-toast-swipe-move-x)) }
+.toast-root[data-swipe="cancel"] { transform: translateX(0); transition: transform var(--motion-micro) var(--ease-out-soft) }
+.toast-root[data-swipe="end"] { animation: toast-out var(--motion-ui) var(--ease-out-soft) }
+
+/* ---------- Skeleton shimmer ---------- */
+.skeleton { position: relative; overflow: hidden; background: var(--color-neutral-200) }
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+/* ---------- Action spinner ---------- (loading = spinner; content = skeleton) */
+.spinner-ring { animation: spin 0.6s linear infinite }
+
+/*
+  prefers-reduced-motion: collapse all decorative movement to a plain fade.
+  The action spinner and skeleton fade are kept — they signal state, not decoration.
+*/
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -43,4 +126,6 @@ body {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+  .skeleton::after { display: none }
+  .spinner-ring { animation: spin 0.6s linear infinite !important }
 }

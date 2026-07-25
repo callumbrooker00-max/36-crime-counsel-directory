@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Spectral, Inter, IBM_Plex_Mono } from "next/font/google";
+import { Toaster } from "@/components/ui/toast";
 import "./globals.css";
 
 // Self-hosted at build by next/font — no runtime CDN request (see CLAUDE.md).
@@ -40,7 +41,9 @@ export default function RootLayout({
       lang="en-GB"
       className={`${spectral.variable} ${inter.variable} ${ibmPlexMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <Toaster>{children}</Toaster>
+      </body>
     </html>
   );
 }
