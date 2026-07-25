@@ -1,0 +1,739 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>36 Crime Counsel Directory — Design Specification</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F5F5F2;        /* cool neutral paper — deliberately not cream */
+    --card:#FCFCFB;
+    --ink:#17171B;          /* near-black */
+    --ink-2:#55555E;        /* secondary text */
+    --ink-3:#8A8A92;        /* tertiary / captions */
+    --line:#E4E3DE;         /* hairlines */
+    --line-2:#EFEEEA;
+    /* wireframe greys */
+    --w-1:#F0EFEC;
+    --w-2:#E6E5E0;
+    --w-3:#D9D8D2;
+    --w-4:#CBCAC3;
+    /* accent — the red brief ribbon ("pink tape") of the Bar; reserved for the single focal action per screen */
+    --ribbon:#A81C30;
+    --ribbon-soft:#F1DDE0;
+    --shadow:0 1px 2px rgba(23,23,27,.04), 0 8px 30px rgba(23,23,27,.06);
+    --serif:'Spectral',Georgia,serif;
+    --sans:'Inter',system-ui,-apple-system,sans-serif;
+    --mono:'IBM Plex Mono',ui-monospace,monospace;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--paper);color:var(--ink);
+    font-family:var(--sans);font-size:15px;line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto} *{animation:none!important;transition:none!important}}
+
+  /* ---------- shell ---------- */
+  .shell{display:grid;grid-template-columns:248px minmax(0,1fr);gap:0;max-width:1240px;margin:0 auto}
+  .rail{position:sticky;top:0;align-self:start;height:100vh;padding:34px 24px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:2px;overflow:auto}
+  .rail .mark{font-family:var(--serif);font-size:19px;font-weight:600;letter-spacing:-.01em;line-height:1.15;margin-bottom:2px}
+  .rail .mark b{color:var(--ribbon);font-weight:600}
+  .rail .sub{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:26px}
+  .rail a{display:block;color:var(--ink-2);text-decoration:none;font-size:13.5px;padding:5px 10px;border-radius:7px;margin-left:-10px}
+  .rail a:hover{color:var(--ink);background:var(--line-2)}
+  .rail .grp{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3);margin:22px 0 6px}
+  .main{padding:0 clamp(20px,5vw,64px) 140px}
+
+  /* ---------- cover ---------- */
+  .cover{padding:88px 0 44px;border-bottom:1px solid var(--line)}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ribbon);margin:0 0 20px}
+  h1.title{font-family:var(--serif);font-weight:500;font-size:clamp(38px,6vw,64px);line-height:1.02;letter-spacing:-.02em;margin:0 0 22px}
+  .lede{font-size:19px;line-height:1.55;color:var(--ink-2);max-width:60ch;margin:0 0 8px}
+  .lede b{color:var(--ink);font-weight:600}
+  .meta{font-family:var(--mono);font-size:12px;color:var(--ink-3);margin-top:30px;display:flex;gap:20px;flex-wrap:wrap}
+
+  /* ---------- design language ---------- */
+  section.dl{padding:56px 0;border-bottom:1px solid var(--line)}
+  h2.sec{font-family:var(--serif);font-weight:500;font-size:30px;letter-spacing:-.015em;margin:0 0 6px}
+  .sec-note{color:var(--ink-2);max-width:64ch;margin:0 0 34px}
+  .dl-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:22px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px}
+  .card h3{font-size:12px;font-family:var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin:0 0 14px;font-weight:600}
+  .swatch{display:flex;align-items:center;gap:11px;margin-bottom:9px;font-size:13px}
+  .chip{width:22px;height:22px;border-radius:6px;border:1px solid rgba(0,0,0,.06);flex:none}
+  .swatch code{font-family:var(--mono);font-size:11px;color:var(--ink-3);margin-left:auto}
+  .type-spec{margin-bottom:16px}
+  .type-spec .lab{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+  .sp-serif{font-family:var(--serif);font-size:26px;line-height:1.1;font-weight:500}
+  .sp-sans{font-family:var(--sans);font-size:19px;font-weight:600}
+  .sp-mono{font-family:var(--mono);font-size:14px}
+  .motion-row{display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--line-2)}
+  .motion-row:last-child{border:0}
+  .motion-row span:last-child{font-family:var(--mono);font-size:12px;color:var(--ink-3)}
+  .legend{display:flex;gap:26px;flex-wrap:wrap;margin-top:8px;font-size:13px;color:var(--ink-2)}
+  .legend .k{display:inline-flex;align-items:center;gap:8px}
+  .mk{width:19px;height:19px;border-radius:50%;background:var(--ribbon);color:#fff;font-family:var(--mono);font-size:11px;display:inline-flex;align-items:center;justify-content:center;flex:none;font-weight:600}
+  .redbox{width:26px;height:17px;border-radius:4px;border:1.5px solid var(--ribbon);background:var(--ribbon-soft);flex:none}
+
+  /* ---------- plate ---------- */
+  .plate{padding:64px 0;border-bottom:1px solid var(--line);scroll-margin-top:24px}
+  .plate-head{display:flex;align-items:baseline;gap:16px;margin-bottom:6px;flex-wrap:wrap}
+  .plate-no{font-family:var(--mono);font-size:12px;letter-spacing:.2em;color:var(--ribbon)}
+  .plate-tag{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3);border:1px solid var(--line);border-radius:20px;padding:3px 10px}
+  h2.plate-t{font-family:var(--serif);font-weight:500;font-size:32px;letter-spacing:-.015em;margin:6px 0 10px}
+  .plate-purpose{font-size:17px;color:var(--ink-2);max-width:66ch;margin:0 0 30px}
+
+  /* frames row */
+  .frames{display:flex;gap:26px;flex-wrap:wrap;align-items:flex-start;margin-bottom:14px}
+  .frame-wrap{flex:1 1 420px;min-width:300px}
+  .frame-cap{font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--ink-3);margin:10px 2px 0;text-transform:uppercase}
+
+  /* device: desktop */
+  .win{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--shadow)}
+  .win-bar{height:30px;background:var(--w-1);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:6px;padding:0 12px}
+  .dot{width:9px;height:9px;border-radius:50%;background:var(--w-3)}
+  .win-url{margin-left:12px;height:15px;flex:1;max-width:60%;background:var(--card);border:1px solid var(--line);border-radius:7px}
+  .win-body{padding:0}
+
+  /* device: phone */
+  .phone{width:230px;margin:0 auto;background:var(--card);border:8px solid #201f24;border-radius:34px;overflow:hidden;box-shadow:var(--shadow)}
+  .phone-notch{height:22px;background:#201f24;display:flex;justify-content:center}
+  .phone-notch::after{content:"";width:64px;height:5px;background:#3a3941;border-radius:6px;margin-top:8px}
+  .phone-body{background:var(--card);min-height:380px}
+
+  /* wireframe primitives */
+  .wbar{height:9px;background:var(--w-2);border-radius:4px}
+  .wbar.d{background:var(--w-3)}
+  .wbar.ink{background:var(--w-4)}
+  .wbar.sm{height:7px}
+  .wblk{background:var(--w-1);border:1px solid var(--w-2);border-radius:8px}
+  .wpill{height:22px;border-radius:20px;background:var(--w-1);border:1px solid var(--w-2)}
+  .wpill.on{background:var(--ribbon-soft);border-color:var(--ribbon)}
+  .wbtn{height:30px;border-radius:8px;background:var(--w-2);display:flex;align-items:center;justify-content:center}
+  .wbtn.primary{background:var(--ribbon);color:#fff;font-size:11px;font-family:var(--mono);letter-spacing:.04em}
+  .wav{background:var(--w-2);border-radius:10px}
+  .wdot{width:8px;height:8px;border-radius:50%;background:var(--ribbon);flex:none}
+  .row{display:flex;gap:8px;align-items:center}
+  .col{display:flex;flex-direction:column}
+  .mk-abs{position:absolute}
+  .rel{position:relative}
+
+  /* annotations legend under a frame */
+  .anno{list-style:none;padding:0;margin:14px 2px 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:8px 22px}
+  .anno li{display:flex;gap:10px;font-size:13px;color:var(--ink-2);line-height:1.45}
+  .anno .mk{margin-top:1px}
+
+  /* spec block */
+  .spec{margin-top:34px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px 40px}
+  .spec .item{padding:16px 0;border-top:1px solid var(--line)}
+  .spec .lab{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ribbon);margin:0 0 7px;font-weight:600}
+  .spec .txt{font-size:14px;color:var(--ink-2);margin:0}
+  .spec .txt b{color:var(--ink);font-weight:600}
+  .spec code{font-family:var(--mono);font-size:12px;background:var(--line-2);padding:1px 5px;border-radius:5px;color:var(--ink)}
+
+  /* misc content boxes */
+  .callout{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--ribbon);border-radius:10px;padding:18px 20px;margin:30px 0;font-size:14px;color:var(--ink-2)}
+  .callout b{color:var(--ink)}
+
+  @media (max-width:900px){
+    .shell{grid-template-columns:1fr}
+    .rail{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line);flex-direction:row;flex-wrap:wrap;align-items:center;gap:4px 14px;padding:18px 20px}
+    .rail .mark,.rail .sub{width:100%}
+    .rail .sub{margin-bottom:10px}
+    .rail .grp{display:none}
+    .main{padding:0 20px 100px}
+    .spec{grid-template-columns:1fr;gap:0}
+  }
+</style>
+
+<div class="shell">
+  <nav class="rail">
+    <div class="mark">36 <b>·</b> Crime</div>
+    <div class="sub">Counsel Directory — Design Spec</div>
+    <a href="#lang">Design language</a>
+    <div class="grp">Client portal</div>
+    <a href="#s01">01 · Access</a>
+    <a href="#s02">02 · Directory</a>
+    <a href="#s03">03 · Profile</a>
+    <a href="#s04">04 · Contact clerks</a>
+    <div class="grp">Administration</div>
+    <a href="#s05">05 · Sign in</a>
+    <a href="#s06">06 · Member list</a>
+    <a href="#s07">07 · Member editor</a>
+    <a href="#s08">08 · Taxonomy</a>
+    <div class="grp">System</div>
+    <a href="#s09">09 · States & motion</a>
+  </nav>
+
+  <main class="main">
+    <!-- COVER -->
+    <header class="cover">
+      <p class="eyebrow">Design specification · v0.1</p>
+      <h1 class="title">Every screen,<br>before a line of code.</h1>
+      <p class="lede">Low-to-mid fidelity wireframes and full interaction specs for the <b>36 Crime Counsel Directory</b> — the standalone client portal that replaces the emailed spreadsheet. Designed for people who instruct counsel under time pressure: fast, quiet, and premium.</p>
+      <p class="lede" style="font-size:16px">Reference points: the restraint of <b>Apple</b>, the density and speed of <b>Linear</b>, the editorial calm of <b>Stripe</b>, and the content-first stillness of <b>Notion</b>.</p>
+      <div class="meta"><span>9 screens</span><span>Client + Admin</span><span>Mobile & desktop</span><span>No code</span></div>
+    </header>
+
+    <!-- DESIGN LANGUAGE -->
+    <section class="dl" id="lang">
+      <h2 class="sec">Design language</h2>
+      <p class="sec-note">The system a senior designer sets before drawing screens. Everything downstream derives from this. The guiding instinct: the interface should get out of the way of the content — counsel are the content — and every gram of visual weight should be spent where a decision is made.</p>
+
+      <div class="dl-grid">
+        <div class="card">
+          <h3>Palette</h3>
+          <div class="swatch"><span class="chip" style="background:#17171B"></span>Ink <code>#17171B</code></div>
+          <div class="swatch"><span class="chip" style="background:#55555E"></span>Ink secondary <code>#55555E</code></div>
+          <div class="swatch"><span class="chip" style="background:#F5F5F2"></span>Paper <code>#F5F5F2</code></div>
+          <div class="swatch"><span class="chip" style="background:#E4E3DE"></span>Hairline <code>#E4E3DE</code></div>
+          <div class="swatch"><span class="chip" style="background:#A81C30"></span>Ribbon red <code>#A81C30</code></div>
+          <p class="spec txt" style="display:block;margin:14px 0 0;font-size:12.5px;color:var(--ink-3)">Red is the barrister's brief ribbon — "pink tape." It is <b style="color:var(--ink)">rationed</b>: it only ever marks the single primary action or focal state on a screen. Nothing decorative is ever red.</p>
+        </div>
+
+        <div class="card">
+          <h3>Type</h3>
+          <div class="type-spec"><div class="lab">Spectral — editorial voice</div><div class="sp-serif">Level 4, RASSO panel</div></div>
+          <div class="type-spec"><div class="lab">Inter — interface & data</div><div class="sp-sans">Ms A. Chen · Called 2009</div></div>
+          <div class="type-spec"><div class="lab">IBM Plex Mono — labels & meta</div><div class="sp-mono">CPS PANEL · LEVEL 4</div></div>
+          <p class="spec txt" style="display:block;margin:6px 0 0;font-size:12.5px;color:var(--ink-3)">Serif for gravitas and names; grotesque for dense UI and legibility; mono for the "engineering" register of metadata and status.</p>
+        </div>
+
+        <div class="card">
+          <h3>Form & space</h3>
+          <div class="motion-row"><span>Base grid</span><span>4px · 8-pt rhythm</span></div>
+          <div class="motion-row"><span>Radius</span><span>cards 12–14 · inputs 8</span></div>
+          <div class="motion-row"><span>Elevation</span><span>hairlines; 1 soft shadow for overlays</span></div>
+          <div class="motion-row"><span>Client density</span><span>comfortable (browse)</span></div>
+          <div class="motion-row"><span>Admin density</span><span>compact (work)</span></div>
+          <p class="spec txt" style="display:block;margin:10px 0 0;font-size:12.5px;color:var(--ink-3)">Two densities, one system: clients get air, clerks get a tight work surface.</p>
+        </div>
+
+        <div class="card">
+          <h3>Motion</h3>
+          <div class="motion-row"><span>Micro (toggle, hover)</span><span>100–120ms</span></div>
+          <div class="motion-row"><span>UI transition</span><span>180ms ease-out</span></div>
+          <div class="motion-row"><span>Result reflow</span><span>150–200ms FLIP</span></div>
+          <div class="motion-row"><span>Sheet / overlay</span><span>260ms spring</span></div>
+          <p class="spec txt" style="display:block;margin:10px 0 0;font-size:12.5px;color:var(--ink-3)">Motion clarifies cause and effect; it never performs. <code style="font-size:11px">prefers-reduced-motion</code> collapses everything to a fade.</p>
+        </div>
+
+        <div class="card" style="grid-column:1/-1">
+          <h3>How to read a plate</h3>
+          <div class="legend">
+            <span class="k"><span class="mk">1</span> Numbered red markers key to the annotation list beneath each wireframe.</span>
+            <span class="k"><span class="redbox"></span> A red element in a wireframe is the screen's <b style="color:var(--ink)">focal action or state</b> — the one thing the eye should reach first.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 01 ACCESS -->
+    <section class="plate" id="s01">
+      <div class="plate-head"><span class="plate-no">01</span><span class="plate-tag">Client</span></div>
+      <h2 class="plate-t">Access</h2>
+      <p class="plate-purpose">The threshold. Grants a client frictionless, revocable entry by magic link and sets the tone in one breath — this is a serious tool from a serious set, not a login wall.</p>
+
+      <div class="frames">
+        <div class="frame-wrap">
+          <div class="phone rel">
+            <div class="phone-notch"></div>
+            <div class="phone-body" style="padding:44px 26px;display:flex;flex-direction:column;gap:0">
+              <div style="text-align:center;margin-bottom:34px">
+                <div style="font-family:var(--serif);font-size:19px;font-weight:600">36 · Crime</div>
+                <div class="wbar sm" style="width:70%;margin:12px auto 0"></div>
+              </div>
+              <div class="rel">
+                <div class="wblk" style="height:38px;margin-bottom:12px"></div>
+                <span class="mk mk-abs" style="right:-8px;top:8px">1</span>
+              </div>
+              <div class="rel">
+                <div class="wbtn primary" style="height:38px">Send me a link</div>
+                <span class="mk mk-abs" style="right:-8px;top:4px">2</span>
+              </div>
+              <div class="wbar sm" style="width:80%;margin:22px auto 0;opacity:.6"></div>
+            </div>
+          </div>
+          <div class="frame-cap">Mobile · pre-submit</div>
+        </div>
+        <div class="frame-wrap">
+          <div class="phone">
+            <div class="phone-notch"></div>
+            <div class="phone-body" style="padding:52px 26px;text-align:center">
+              <div style="width:44px;height:44px;border-radius:50%;background:var(--ribbon-soft);border:1.5px solid var(--ribbon);margin:0 auto 22px"></div>
+              <div class="wbar" style="width:60%;margin:0 auto 10px"></div>
+              <div class="wbar sm" style="width:85%;margin:0 auto 6px;opacity:.6"></div>
+              <div class="wbar sm" style="width:70%;margin:0 auto 30px;opacity:.6"></div>
+              <div class="wbar sm ink" style="width:40%;margin:0 auto"></div>
+            </div>
+          </div>
+          <div class="frame-cap">Mobile · "check your email"</div>
+        </div>
+      </div>
+      <ul class="anno">
+        <li><span class="mk">1</span> Single email field. Nothing else competes for attention.</li>
+        <li><span class="mk">2</span> The one action, in ribbon red. Disabled until the address is valid.</li>
+      </ul>
+
+      <div class="spec">
+        <div class="item"><p class="lab">Purpose</p><p class="txt">Passwordless entry that is quick for legitimate clients and revocable per firm. First impression of quality and restraint.</p></div>
+        <div class="item"><p class="lab">Layout</p><p class="txt">Single centred column, max <code>420px</code>, on generous paper. Wordmark, one-line description of what the directory does, email field, primary button, quiet legal footer.</p></div>
+        <div class="item"><p class="lab">Components</p><p class="txt">Wordmark · email input · primary button · helper text · footer line. No global nav.</p></div>
+        <div class="item"><p class="lab">Interactions</p><p class="txt">Valid email enables the button. Submit swaps the form for a "check your email" confirmation echoing the address, with <b>Resend</b> (cooldown) and <b>Use a different email</b>. Enter submits.</p></div>
+        <div class="item"><p class="lab">Responsive</p><p class="txt">Identical on all sizes; field and button go full-width with ≥48px tap targets and comfortable side padding on mobile.</p></div>
+        <div class="item"><p class="lab">Loading</p><p class="txt">Button becomes <code>Sending…</code> with an inline spinner; field locks. No page skeleton — there is no data to fetch.</p></div>
+        <div class="item"><p class="lab">Empty</p><p class="txt">The pre-submit form <em>is</em> the empty state; the description carries the value proposition.</p></div>
+        <div class="item"><p class="lab">Error</p><p class="txt">Invalid format → inline field error, "Enter a valid email address." Unknown address → deliberately non-leaky success copy: "If that address has access, a link is on its way." Rate limit → "That's a few links now — try again in a minute."</p></div>
+        <div class="item"><p class="lab">Animation</p><p class="txt">Form→confirmation cross-fades with a slight upward slide (180ms, ease-out). No bounce, no confetti.</p></div>
+        <div class="item"><p class="lab">Hierarchy</p><p class="txt">Identity → one sentence of "what this is" → the action. The red button is the only saturated pixel on the screen.</p></div>
+      </div>
+    </section>
+
+    <!-- 02 DIRECTORY -->
+    <section class="plate" id="s02">
+      <div class="plate-head"><span class="plate-no">02</span><span class="plate-tag">Client · hero screen</span></div>
+      <h2 class="plate-t">Directory</h2>
+      <p class="plate-purpose">The centre of gravity. It answers one question — <em>who can take this brief, at the right level and specialism?</em> — in seconds. The whole dataset lives in the browser, so every filter is instant, with no spinner and no reload.</p>
+
+      <div class="frames">
+        <div class="frame-wrap" style="flex:1 1 560px">
+          <div class="win rel">
+            <div class="win-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="win-url"></span></div>
+            <div class="win-body">
+              <!-- top bar -->
+              <div class="row rel" style="padding:12px 16px;border-bottom:1px solid var(--line);gap:14px">
+                <div style="font-family:var(--serif);font-weight:600;font-size:14px">36·Crime</div>
+                <div class="wblk rel" style="flex:1;height:26px;max-width:280px"><span class="mk mk-abs" style="right:-8px;top:-9px">1</span></div>
+                <div class="wbar sm" style="width:70px;margin-left:auto"></div>
+              </div>
+              <div class="row" style="align-items:stretch">
+                <!-- filter rail -->
+                <div class="col rel" style="width:150px;flex:none;padding:14px 12px;border-right:1px solid var(--line);gap:14px;background:var(--w-1)">
+                  <span class="mk mk-abs" style="left:-8px;top:12px">2</span>
+                  <div class="col" style="gap:6px"><div class="wbar sm d" style="width:60%"></div><div class="row" style="gap:5px;flex-wrap:wrap"><span class="wpill on" style="width:34px"></span><span class="wpill" style="width:30px"></span><span class="wpill" style="width:38px"></span></div></div>
+                  <div class="col" style="gap:6px"><div class="wbar sm d" style="width:75%"></div><div class="wpill" style="width:100%;border-radius:7px"></div><div class="wpill" style="width:100%;border-radius:7px"></div></div>
+                  <div class="col" style="gap:6px"><div class="wbar sm d" style="width:50%"></div><div class="wpill on" style="width:100%;border-radius:7px"></div></div>
+                </div>
+                <!-- grid -->
+                <div class="col rel" style="flex:1;padding:14px 16px;gap:12px;min-width:0">
+                  <div class="row rel" style="gap:8px"><span class="wpill on" style="width:70px"></span><span class="wpill on" style="width:54px"></span><div class="wbar sm" style="width:40px;margin-left:auto;opacity:.6"></div><span class="mk mk-abs" style="right:60px;top:-9px">3</span></div>
+                  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+                    <!-- card x6 · panel-level badge (red) leads; secondary specialism pill supports -->
+                    <div class="wblk rel" style="padding:11px;background:var(--card)"><div class="row" style="gap:8px;margin-bottom:9px"><div class="wav" style="width:30px;height:30px;border-radius:50%"></div><div class="col" style="gap:5px;flex:1"><div class="wbar sm ink" style="width:80%"></div><div class="wbar sm" style="width:50%"></div></div></div><span class="wpill on" style="width:44px;height:16px;display:inline-block"></span><div class="wbar sm" style="width:90%;margin-top:9px;opacity:.6"></div><div class="row" style="gap:5px;margin-top:9px"><span class="wpill" style="width:52px;height:16px;display:inline-block"></span></div><span class="mk mk-abs" style="right:-8px;top:-8px">4</span></div>
+                    <div class="wblk" style="padding:11px;background:var(--card)"><div class="row" style="gap:8px;margin-bottom:9px"><div class="wav" style="width:30px;height:30px;border-radius:50%"></div><div class="col" style="gap:5px;flex:1"><div class="wbar sm ink" style="width:70%"></div><div class="wbar sm" style="width:55%"></div></div></div><span class="wpill on" style="width:38px;height:16px;display:inline-block"></span><div class="wbar sm" style="width:85%;margin-top:9px;opacity:.6"></div><div class="row" style="gap:5px;margin-top:9px"><span class="wpill" style="width:46px;height:16px;display:inline-block"></span></div></div>
+                    <div class="wblk" style="padding:11px;background:var(--card)"><div class="row" style="gap:8px;margin-bottom:9px"><div class="wav" style="width:30px;height:30px;border-radius:50%"></div><div class="col" style="gap:5px;flex:1"><div class="wbar sm ink" style="width:75%"></div><div class="wbar sm" style="width:48%"></div></div></div><span class="wpill on" style="width:42px;height:16px;display:inline-block"></span><div class="wbar sm" style="width:88%;margin-top:9px;opacity:.6"></div><div class="row" style="gap:5px;margin-top:9px"><span class="wpill" style="width:58px;height:16px;display:inline-block"></span></div></div>
+                    <div class="wblk" style="padding:11px;background:var(--card)"><div class="row" style="gap:8px;margin-bottom:9px"><div class="wav" style="width:30px;height:30px;border-radius:50%"></div><div class="col" style="gap:5px;flex:1"><div class="wbar sm ink" style="width:78%"></div><div class="wbar sm" style="width:52%"></div></div></div><span class="wpill on" style="width:40px;height:16px;display:inline-block"></span><div class="wbar sm" style="width:82%;margin-top:9px;opacity:.6"></div><div class="row" style="gap:5px;margin-top:9px"><span class="wpill" style="width:50px;height:16px;display:inline-block"></span></div></div>
+                    <div class="wblk" style="padding:11px;background:var(--card)"><div class="row" style="gap:8px;margin-bottom:9px"><div class="wav" style="width:30px;height:30px;border-radius:50%"></div><div class="col" style="gap:5px;flex:1"><div class="wbar sm ink" style="width:72%"></div><div class="wbar sm" style="width:50%"></div></div></div><span class="wpill on" style="width:44px;height:16px;display:inline-block"></span><div class="wbar sm" style="width:90%;margin-top:9px;opacity:.6"></div><div class="row" style="gap:5px;margin-top:9px"><span class="wpill" style="width:44px;height:16px;display:inline-block"></span></div></div>
+                    <div class="wblk" style="padding:11px;background:var(--card)"><div class="row" style="gap:8px;margin-bottom:9px"><div class="wav" style="width:30px;height:30px;border-radius:50%"></div><div class="col" style="gap:5px;flex:1"><div class="wbar sm ink" style="width:76%"></div><div class="wbar sm" style="width:46%"></div></div></div><span class="wpill on" style="width:36px;height:16px;display:inline-block"></span><div class="wbar sm" style="width:86%;margin-top:9px;opacity:.6"></div><div class="row" style="gap:5px;margin-top:9px"><span class="wpill" style="width:54px;height:16px;display:inline-block"></span></div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="frame-cap">Desktop · filtered result</div>
+        </div>
+
+        <div class="frame-wrap" style="flex:0 1 260px">
+          <div class="phone">
+            <div class="phone-notch"></div>
+            <div class="phone-body" style="padding:0">
+              <div class="row" style="padding:10px 12px;border-bottom:1px solid var(--line);gap:8px"><div style="font-family:var(--serif);font-weight:600;font-size:12px">36·Crime</div><div class="wblk" style="flex:1;height:22px"></div></div>
+              <div class="col" style="padding:12px;gap:10px">
+                <div class="wblk" style="padding:9px;background:var(--card)"><div class="row" style="gap:7px"><div class="wav" style="width:26px;height:26px;border-radius:50%"></div><div class="col" style="gap:4px;flex:1"><div class="wbar sm ink" style="width:70%"></div><div class="wbar sm" style="width:45%"></div></div><span class="wpill on" style="width:30px;height:16px;display:inline-block"></span></div></div>
+                <div class="wblk" style="padding:9px;background:var(--card)"><div class="row" style="gap:7px"><div class="wav" style="width:26px;height:26px;border-radius:50%"></div><div class="col" style="gap:4px;flex:1"><div class="wbar sm ink" style="width:65%"></div><div class="wbar sm" style="width:50%"></div></div><span class="wpill on" style="width:30px;height:16px;display:inline-block"></span></div></div>
+                <div class="wblk" style="padding:9px;background:var(--card)"><div class="row" style="gap:7px"><div class="wav" style="width:26px;height:26px;border-radius:50%"></div><div class="col" style="gap:4px;flex:1"><div class="wbar sm ink" style="width:72%"></div><div class="wbar sm" style="width:42%"></div></div><span class="wpill on" style="width:30px;height:16px;display:inline-block"></span></div></div>
+              </div>
+              <div class="rel" style="padding:0 12px 14px"><div class="wbtn primary" style="height:36px;border-radius:20px">Filters · 3</div><span class="mk mk-abs" style="right:4px;top:-9px">5</span></div>
+            </div>
+          </div>
+          <div class="frame-cap">Mobile · filter sheet trigger</div>
+        </div>
+      </div>
+      <ul class="anno">
+        <li><span class="mk">1</span> Instant, type-as-you-go search across name, specialism and notable-case keywords.</li>
+        <li><span class="mk">2</span> Sticky filter rail. <b>CPS panel level</b> and <b>specialist panels</b> sit first — the flagship filters for CPS users.</li>
+        <li><span class="mk">3</span> Active-filter chips + live result count + "Clear all". The URL encodes this state so a view is shareable.</li>
+        <li><span class="mk">4</span> Counsel card: name and panel-level badge lead; a top specialism as support; practice capacity noted.</li>
+        <li><span class="mk">5</span> On mobile the rail becomes a bottom-sheet; the button shows the active-filter count and a running "Show N counsel".</li>
+      </ul>
+
+      <div class="spec">
+        <div class="item"><p class="lab">Purpose</p><p class="txt">Turn a case need into a correct-grade shortlist in seconds — the reason the directory beats the spreadsheet.</p></div>
+        <div class="item"><p class="lab">Layout</p><p class="txt">Slim top bar (wordmark · search · count/sort). Desktop: sticky ~260px filter rail + responsive card grid (up to 4 cols). Mobile: search + a "Filters" button opening a bottom-sheet; single-column cards.</p></div>
+        <div class="item"><p class="lab">Components</p><p class="txt">Search · filter rail/sheet · filter pills · sort · result count · active-filter chips · counsel cards · capacity indicator.</p></div>
+        <div class="item"><p class="lab">Interactions</p><p class="txt">Every filter/keystroke updates results <b>instantly and in place</b> (client-side). URL reflects state. Card hover raises subtly and reveals "View profile". Tap → profile. Mobile sheet filters apply live against the count.</p></div>
+        <div class="item"><p class="lab">Responsive</p><p class="txt">Grid reflows 4→3→2→1 by width. Filter rail → bottom-sheet under <code>768px</code>. Search collapses to an icon on the narrowest screens.</p></div>
+        <div class="item"><p class="lab">Loading</p><p class="txt">First paint shows a skeleton grid matching the final layout (shimmering card placeholders) and a skeleton rail. Thereafter filtering is synchronous — <b>never</b> a spinner; results simply reflow.</p></div>
+        <div class="item"><p class="lab">Empty</p><p class="txt">In-grid, directive, never a dead end: "No counsel match these filters," plus the binding reason ("No Level 4 counsel are on the RASSO panel") and two actions — relax the most-restrictive filter, or <b>Contact clerks</b>.</p></div>
+        <div class="item"><p class="lab">Error</p><p class="txt">If the cached payload fails to load: "Couldn't load the directory. Retry." with a retry button; the top bar stays. Never a blank screen.</p></div>
+        <div class="item"><p class="lab">Animation</p><p class="txt">Filter changes animate card positions with a FLIP transition + opacity for entering/leaving cards (150–200ms, ease-out). The result count rolls. Reduced motion → cross-fade only.</p></div>
+        <div class="item"><p class="lab">Hierarchy</p><p class="txt">Tools recede (quiet rail/top bar); cards dominate. Red is spent on exactly two things that anchor the shortlist: the panel-level badge (the credential CPS clients scan for) and the active-filter count.</p></div>
+      </div>
+    </section>
+
+    <!-- 03 PROFILE -->
+    <section class="plate" id="s03">
+      <div class="plate-head"><span class="plate-no">03</span><span class="plate-tag">Client</span></div>
+      <h2 class="plate-t">Profile</h2>
+      <p class="plate-purpose">Enough to decide, and exactly one way to act. A profile gives seniority, panels, specialisms and a sense of the person — then routes straight to the clerks. It is not a CV dump.</p>
+
+      <div class="frames">
+        <div class="frame-wrap" style="flex:1 1 520px">
+          <div class="win">
+            <div class="win-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="win-url"></span></div>
+            <div class="win-body" style="padding:16px">
+              <div class="wbar sm" style="width:120px;margin-bottom:16px;opacity:.6"></div>
+              <div class="row" style="align-items:flex-start;gap:20px">
+                <div class="col" style="flex:1;gap:14px">
+                  <div class="row" style="gap:14px"><div class="wav" style="width:66px;height:66px;border-radius:12px"></div><div class="col" style="gap:8px;flex:1;padding-top:4px"><div class="wbar ink" style="width:55%;height:14px"></div><div class="wbar sm" style="width:40%"></div></div></div>
+                  <div class="col rel" style="gap:7px"><div class="wbar sm d" style="width:30%"></div><div class="row" style="gap:6px;flex-wrap:wrap"><span class="wpill on" style="width:60px"></span><span class="wpill on" style="width:74px"></span><span class="wpill" style="width:52px"></span></div><span class="mk mk-abs" style="left:-8px;top:0">1</span></div>
+                  <div class="col" style="gap:7px"><div class="wbar sm d" style="width:24%"></div><div class="wbar sm" style="width:100%;opacity:.6"></div><div class="wbar sm" style="width:92%;opacity:.6"></div><div class="wbar sm" style="width:80%;opacity:.6"></div></div>
+                </div>
+                <div class="col rel" style="width:170px;flex:none;gap:10px;background:var(--w-1);border:1px solid var(--w-2);border-radius:12px;padding:14px">
+                  <span class="mk mk-abs" style="right:-8px;top:-8px">2</span>
+                  <div class="row" style="gap:7px"><span class="wpill on" style="width:52px;height:18px;display:inline-block"></span><div class="wbar sm ink" style="width:40%"></div></div>
+                  <div class="wbar sm" style="width:80%;opacity:.6"></div>
+                  <div class="wbtn primary" style="height:34px;margin-top:4px">Contact clerks</div>
+                  <div class="wbtn" style="height:30px">Share</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="frame-cap">Desktop · profile</div>
+        </div>
+
+        <div class="frame-wrap" style="flex:0 1 260px">
+          <div class="phone rel">
+            <div class="phone-notch"></div>
+            <div class="phone-body" style="padding:14px 14px 60px">
+              <div class="wbar sm" style="width:80px;margin-bottom:14px;opacity:.6"></div>
+              <div class="col" style="align-items:center;gap:9px;margin-bottom:14px"><div class="wav" style="width:60px;height:60px;border-radius:12px"></div><div class="wbar ink" style="width:55%;height:12px"></div><div class="wbar sm" style="width:38%"></div></div>
+              <div class="row" style="gap:6px;flex-wrap:wrap;justify-content:center;margin-bottom:14px"><span class="wpill on" style="width:56px"></span><span class="wpill on" style="width:68px"></span></div>
+              <div class="col" style="gap:6px"><div class="wbar sm" style="width:100%;opacity:.6"></div><div class="wbar sm" style="width:85%;opacity:.6"></div></div>
+            </div>
+          </div>
+          <span class="mk mk-abs" style="right:60px;bottom:24px">3</span>
+          <div style="position:relative;margin-top:-46px;padding:0 22px"><div class="wbtn primary" style="height:36px;border-radius:10px">Contact clerks</div></div>
+          <div class="frame-cap">Mobile · sticky action bar</div>
+        </div>
+      </div>
+      <ul class="anno">
+        <li><span class="mk">1</span> Panels &amp; levels as badges — the credential a client scans for first.</li>
+        <li><span class="mk">2</span> Sticky rail: an at-a-glance panel level and practice capacity, then the single red CTA.</li>
+        <li><span class="mk">3</span> On mobile the CTA pins to a bottom action bar, always in thumb reach.</li>
+      </ul>
+
+      <div class="spec">
+        <div class="item"><p class="lab">Purpose</p><p class="txt">Support a confident instruct decision and route it to the clerks without exposing personal contact details.</p></div>
+        <div class="item"><p class="lab">Layout</p><p class="txt">Back link (preserves the directory's filter state). Desktop two-column: identity + panels + specialisms + bio + notable cases on the left; a sticky at-a-glance credentials + CTA rail on the right. Mobile stacks with a pinned action bar.</p></div>
+        <div class="item"><p class="lab">Components</p><p class="txt">Back link · identity header · panel/level badges · specialism tags · bio · notable-cases list · at-a-glance credentials card · primary CTA · share.</p></div>
+        <div class="item"><p class="lab">Interactions</p><p class="txt"><b>Contact clerks</b> opens the enquiry sheet pre-referencing this counsel. Share copies the deep link (toast: "Link copied"). Back returns to the exact filtered directory.</p></div>
+        <div class="item"><p class="lab">Responsive</p><p class="txt">Two-column → single column; the rail becomes a top credentials strip plus a sticky bottom CTA on mobile.</p></div>
+        <div class="item"><p class="lab">Loading</p><p class="txt">Usually instant from the cached payload. A cold deep-link load shows a profile skeleton (avatar block, title bars, badge pills).</p></div>
+        <div class="item"><p class="lab">Empty</p><p class="txt">No per-record empty. Absent fields (e.g. no notable cases yet) are simply omitted — no "N/A" clutter.</p></div>
+        <div class="item"><p class="lab">Error</p><p class="txt">Unknown, unpublished or revoked slug → "This profile isn't available," + "Back to directory." Handles drafts and revocations gracefully.</p></div>
+        <div class="item"><p class="lab">Animation</p><p class="txt">Enter is a short staggered fade/slide — header, then badges, then body — ~200ms total. The CTA has a calm press state, no bounce.</p></div>
+        <div class="item"><p class="lab">Hierarchy</p><p class="txt">Name + KC/level → credentials + CTA (the decision) → supporting detail. Red is the CTA and the panel-level badge, nothing else.</p></div>
+      </div>
+    </section>
+
+    <!-- 04 CONTACT -->
+    <section class="plate" id="s04">
+      <div class="plate-head"><span class="plate-no">04</span><span class="plate-tag">Client</span></div>
+      <h2 class="plate-t">Contact clerks</h2>
+      <p class="plate-purpose">Converts intent into a routed enquiry with zero friction, keeps the clerking team as the single channel, and protects counsel PII. It appears as a sheet over the directory or profile — the client never loses their place.</p>
+
+      <div class="frames">
+        <div class="frame-wrap" style="flex:1 1 480px">
+          <div class="win rel">
+            <div class="win-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="win-url"></span></div>
+            <div class="win-body rel" style="min-height:270px;padding:16px;background:var(--w-1)">
+              <!-- dimmed underlay hint -->
+              <div style="position:absolute;inset:0;background:rgba(23,23,27,.28)"></div>
+              <!-- right sheet -->
+              <div class="col rel" style="position:absolute;top:0;right:0;bottom:0;width:56%;background:var(--card);border-left:1px solid var(--line);padding:16px;gap:12px;box-shadow:var(--shadow)">
+                <div class="row" style="justify-content:space-between"><div class="wbar ink" style="width:55%;height:11px"></div><div class="wblk" style="width:20px;height:20px"></div></div>
+                <div class="rel"><span class="wpill on" style="width:110px;height:22px;display:inline-flex;align-items:center"></span><span class="mk mk-abs" style="left:-8px;top:0">1</span></div>
+                <div class="wblk" style="height:30px"></div>
+                <div class="wblk" style="height:30px"></div>
+                <div class="rel"><div class="row" style="gap:6px"><span class="wpill" style="width:60px;height:26px"></span><span class="wpill on" style="width:60px;height:26px"></span><span class="wpill" style="width:60px;height:26px"></span></div><span class="mk mk-abs" style="right:-8px;top:0">2</span></div>
+                <div class="wblk" style="height:56px"></div>
+                <div class="wbtn primary" style="height:34px;margin-top:auto">Send enquiry</div>
+              </div>
+            </div>
+          </div>
+          <div class="frame-cap">Desktop · right sheet over dimmed page</div>
+        </div>
+        <div class="frame-wrap" style="flex:0 1 240px">
+          <div class="phone">
+            <div class="phone-notch"></div>
+            <div class="phone-body rel" style="padding:0;min-height:360px;background:var(--w-2)">
+              <div style="position:absolute;inset:0;background:rgba(23,23,27,.3)"></div>
+              <div class="col" style="position:absolute;left:0;right:0;bottom:0;background:var(--card);border-radius:20px 20px 0 0;padding:14px;gap:9px">
+                <div style="width:34px;height:4px;border-radius:3px;background:var(--w-3);margin:0 auto 6px"></div>
+                <span class="wpill on" style="width:100px;height:20px"></span>
+                <div class="wblk" style="height:28px"></div>
+                <div class="wblk" style="height:28px"></div>
+                <div class="wblk" style="height:44px"></div>
+                <div class="wbtn primary" style="height:34px">Send enquiry</div>
+              </div>
+            </div>
+          </div>
+          <div class="frame-cap">Mobile · bottom sheet</div>
+        </div>
+      </div>
+      <ul class="anno">
+        <li><span class="mk">1</span> The referenced counsel arrives pre-filled as a removable chip; more can be added for a shortlist enquiry.</li>
+        <li><span class="mk">2</span> Urgency as a segmented control — Routine / Soon / Urgent — the clerks' triage signal.</li>
+      </ul>
+
+      <div class="spec">
+        <div class="item"><p class="lab">Purpose</p><p class="txt">Capture a clean, triageable enquiry and deliver it to the clerking inbox — the only contact path, by design.</p></div>
+        <div class="item"><p class="lab">Layout</p><p class="txt">Right-side sheet (~440px) on desktop; full-height bottom sheet with a drag handle on mobile. Referenced-counsel chip, then your name, firm, email, case type, urgency, message, and the send action.</p></div>
+        <div class="item"><p class="lab">Components</p><p class="txt">Scrim · sheet · counsel chip(s) · text inputs · case-type select · segmented urgency · primary/secondary buttons.</p></div>
+        <div class="item"><p class="lab">Interactions</p><p class="txt">Opens pre-filled from a profile or card. Submit → in-sheet success ("Enquiry sent — the clerks will reply to <em>you@firm</em>"). Esc / scrim / close dismisses, with a confirm if the form is dirty.</p></div>
+        <div class="item"><p class="lab">Responsive</p><p class="txt">Side sheet on desktop, bottom sheet on mobile; content and order identical.</p></div>
+        <div class="item"><p class="lab">Loading</p><p class="txt">Send shows a button spinner "Sending…" and locks fields; the sheet stays put.</p></div>
+        <div class="item"><p class="lab">Empty</p><p class="txt">A fresh form is the empty state; the message field placeholder guides — "Case type, hearing date, court, anything relevant."</p></div>
+        <div class="item"><p class="lab">Error</p><p class="txt">Inline validation on email/required fields. Send failure → non-destructive banner "Couldn't send. Retry," preserving everything typed. (If the MVP uses <code>mailto:</code> instead, this action opens the mail client; in-app is recommended so enquiries are logged.)</p></div>
+        <div class="item"><p class="lab">Animation</p><p class="txt">Sheet slides in on a 260ms spring while the scrim fades; success draws a check and cross-fades the content. Reduced motion → fade only.</p></div>
+        <div class="item"><p class="lab">Hierarchy</p><p class="txt">The referenced counsel and the Send action dominate; fields are calm and grouped; red only on Send.</p></div>
+      </div>
+    </section>
+
+    <!-- 05 SIGN IN -->
+    <section class="plate" id="s05">
+      <div class="plate-head"><span class="plate-no">05</span><span class="plate-tag">Admin</span></div>
+      <h2 class="plate-t">Sign in</h2>
+      <p class="plate-purpose">The clerks' door. A quieter, more utilitarian sibling of the client gate — the shift in tone is itself the signal that you've moved back-of-house.</p>
+
+      <div class="frames">
+        <div class="frame-wrap" style="flex:1 1 420px">
+          <div class="win">
+            <div class="win-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="win-url"></span></div>
+            <div class="win-body" style="min-height:230px;display:flex;align-items:center;justify-content:center;background:var(--w-1)">
+              <div class="col" style="width:250px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:22px;gap:11px">
+                <div style="font-family:var(--serif);font-weight:600;font-size:14px">36 · Crime</div>
+                <div class="wbar sm" style="width:60%;opacity:.6;margin-bottom:4px"></div>
+                <div class="wblk" style="height:32px"></div>
+                <div class="wblk" style="height:32px"></div>
+                <div class="wbtn primary" style="height:34px">Sign in</div>
+                <div class="wbar sm" style="width:45%;margin:2px auto 0;opacity:.5"></div>
+              </div>
+            </div>
+          </div>
+          <div class="frame-cap">Desktop · admin sign-in</div>
+        </div>
+      </div>
+
+      <div class="spec">
+        <div class="item"><p class="lab">Purpose</p><p class="txt">Fast, secure entry for clerks and practice managers.</p></div>
+        <div class="item"><p class="lab">Layout</p><p class="txt">Centred card on a plainer, slightly deeper neutral. Wordmark + "Directory admin," email/password (or SSO), primary "Sign in," quiet "Forgot password."</p></div>
+        <div class="item"><p class="lab">Components</p><p class="txt">Wordmark · inputs · primary button · forgot-password link · optional SSO button.</p></div>
+        <div class="item"><p class="lab">Interactions</p><p class="txt">Enter submits. Standard forgot-password flow. Optional SSO later.</p></div>
+        <div class="item"><p class="lab">Responsive</p><p class="txt">Centred card → full-width on mobile; nothing else changes.</p></div>
+        <div class="item"><p class="lab">Loading</p><p class="txt">Button "Signing in…" with spinner.</p></div>
+        <div class="item"><p class="lab">Empty</p><p class="txt">n/a.</p></div>
+        <div class="item"><p class="lab">Error</p><p class="txt">"Email or password is incorrect" — no field-specific leak. Lockout after repeated attempts with a cooldown message.</p></div>
+        <div class="item"><p class="lab">Animation</p><p class="txt">Deliberately minimal — focus rings and the button state only. Restraint signals "tool."</p></div>
+        <div class="item"><p class="lab">Hierarchy</p><p class="txt">One card, one action. Intentionally less "designed" than the client side.</p></div>
+      </div>
+    </section>
+
+    <!-- 06 MEMBER LIST -->
+    <section class="plate" id="s06">
+      <div class="plate-head"><span class="plate-no">06</span><span class="plate-tag">Admin · hero action</span></div>
+      <h2 class="plate-t">Member list</h2>
+      <p class="plate-purpose">The clerks' work surface, and the beating heart of data quality. Keeping records current — a quick inline edit and the publish toggle — is the highest-frequency action in the whole product: one tap, optimistic, and live for clients within seconds.</p>
+
+      <div class="frames">
+        <div class="frame-wrap" style="flex:1 1 560px">
+          <div class="win">
+            <div class="win-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="win-url"></span></div>
+            <div class="win-body" style="padding:0">
+              <div class="row rel" style="padding:11px 14px;border-bottom:1px solid var(--line);gap:10px"><div class="wblk" style="width:220px;height:26px"></div><div class="wbtn primary" style="width:110px;height:28px;margin-left:auto">Add member</div></div>
+              <!-- table header -->
+              <div class="row" style="padding:8px 14px;border-bottom:1px solid var(--line);gap:12px;background:var(--w-1)"><div class="wbar sm d" style="width:120px"></div><div class="wbar sm d" style="width:50px"></div><div class="wbar sm d" style="width:90px"></div><div class="wbar sm d" style="width:110px;margin-left:auto"></div></div>
+              <!-- rows -->
+              <div class="rel">
+                <span class="mk mk-abs" style="right:98px;top:12px;z-index:2">1</span>
+                <div class="row" style="padding:11px 14px;border-bottom:1px solid var(--line-2);gap:12px;align-items:center"><div class="row" style="gap:9px;width:150px"><div class="wav" style="width:26px;height:26px;border-radius:50%"></div><div class="wbar sm ink" style="width:80px"></div></div><div class="wbar sm" style="width:36px"></div><span class="wpill on" style="width:56px;height:18px;display:inline-block"></span><div class="row" style="margin-left:auto;gap:8px;align-items:center"><span class="wpill on" style="width:78px;height:24px"></span><div class="wblk" style="width:22px;height:22px"></div></div></div>
+                <div class="row" style="padding:11px 14px;border-bottom:1px solid var(--line-2);gap:12px;align-items:center"><div class="row" style="gap:9px;width:150px"><div class="wav" style="width:26px;height:26px;border-radius:50%"></div><div class="wbar sm ink" style="width:70px"></div></div><div class="wbar sm" style="width:36px"></div><span class="wpill on" style="width:48px;height:18px;display:inline-block"></span><div class="row" style="margin-left:auto;gap:8px;align-items:center"><span class="wpill" style="width:78px;height:24px"></span><div class="wblk" style="width:22px;height:22px"></div></div></div>
+                <div class="row" style="padding:11px 14px;border-bottom:1px solid var(--line-2);gap:12px;align-items:center"><div class="row" style="gap:9px;width:150px"><div class="wav" style="width:26px;height:26px;border-radius:50%"></div><div class="wbar sm ink" style="width:86px"></div></div><div class="wbar sm" style="width:36px"></div><span class="wpill on" style="width:52px;height:18px;display:inline-block"></span><div class="row" style="margin-left:auto;gap:8px;align-items:center"><span class="wpill on" style="width:78px;height:24px"></span><div class="wblk" style="width:22px;height:22px"></div></div></div>
+                <div class="row" style="padding:11px 14px;gap:12px;align-items:center;opacity:.7"><div class="row" style="gap:9px;width:150px"><div class="wav" style="width:26px;height:26px;border-radius:50%"></div><div class="wbar sm ink" style="width:74px"></div></div><div class="wbar sm" style="width:36px"></div><span class="wpill" style="width:60px;height:18px;display:inline-block;border-style:dashed"></span><div class="row" style="margin-left:auto;gap:8px;align-items:center"><span class="wpill" style="width:78px;height:24px"></span><div class="wblk" style="width:22px;height:22px"></div></div></div>
+              </div>
+            </div>
+          </div>
+          <div class="frame-cap">Desktop · compact list (last row = draft)</div>
+        </div>
+        <div class="frame-wrap" style="flex:0 1 240px">
+          <div class="phone">
+            <div class="phone-notch"></div>
+            <div class="phone-body" style="padding:12px;display:flex;flex-direction:column;gap:9px">
+              <div class="wblk" style="height:24px"></div>
+              <div class="wblk" style="padding:10px;background:var(--card)"><div class="row" style="gap:8px;margin-bottom:8px"><div class="wav" style="width:24px;height:24px;border-radius:50%"></div><div class="wbar sm ink" style="width:60%"></div></div><span class="wpill on" style="width:90px;height:24px;display:inline-block"></span></div>
+              <div class="wblk" style="padding:10px;background:var(--card)"><div class="row" style="gap:8px;margin-bottom:8px"><div class="wav" style="width:24px;height:24px;border-radius:50%"></div><div class="wbar sm ink" style="width:55%"></div></div><span class="wpill" style="width:90px;height:24px;display:inline-block"></span></div>
+            </div>
+          </div>
+          <div class="frame-cap">Mobile · stacked, publish toggle in reach</div>
+        </div>
+      </div>
+      <ul class="anno">
+        <li><span class="mk">1</span> Inline publish toggle — the hero. One tap moves a record between draft and published, optimistically, with a quiet "Saved" tick, live for clients in seconds.</li>
+      </ul>
+
+      <div class="spec">
+        <div class="item"><p class="lab">Purpose</p><p class="txt">Keep the dataset accurate and current with minimal clicks; make editing and publishing a fast, low-risk habit.</p></div>
+        <div class="item"><p class="lab">Layout</p><p class="txt">Compact, Linear-style list. Toolbar: search · status filter · <b>Add member</b>. Columns: member · call year · panel/level · publish toggle · status · last updated · edit.</p></div>
+        <div class="item"><p class="lab">Components</p><p class="txt">Data list · inline publish control (Draft / Published) · status badge · search · add button · row menu.</p></div>
+        <div class="item"><p class="lab">Interactions</p><p class="txt">Toggle updates optimistically, then revalidates the client payload. Row click → editor. Search-as-you-type. Bulk-select later.</p></div>
+        <div class="item"><p class="lab">Responsive</p><p class="txt">Table → stacked cards under <code>768px</code>; the toggle stays thumb-reachable.</p></div>
+        <div class="item"><p class="lab">Loading</p><p class="txt">Skeleton rows. Toggling is optimistic — no full reload; a failed save reverts the control and shows a toast.</p></div>
+        <div class="item"><p class="lab">Empty</p><p class="txt">No members → "No members yet. Add your first, or import from Excel," with Add (primary) + Import (secondary). Filtered-empty → "No members match" + clear.</p></div>
+        <div class="item"><p class="lab">Error</p><p class="txt">Save failure → control reverts, toast "Couldn't save. Retry." Nothing is ever silently lost.</p></div>
+        <div class="item"><p class="lab">Animation</p><p class="txt">Crisp toggle state change; "Saved" tick fades in and out. Row hover highlight. Quick and functional — no flourish.</p></div>
+        <div class="item"><p class="lab">Hierarchy</p><p class="txt">The list is the surface; the publish column carries the most weight (it's how records go live). Red = the "Published" state and the Add action.</p></div>
+      </div>
+    </section>
+
+    <!-- 07 EDITOR -->
+    <section class="plate" id="s07">
+      <div class="plate-head"><span class="plate-no">07</span><span class="plate-tag">Admin</span></div>
+      <h2 class="plate-t">Member editor</h2>
+      <p class="plate-purpose">Add or maintain a member safely, with a guided form and a live preview so a clerk always sees exactly what a client will see. Draft first; publish deliberately.</p>
+
+      <div class="frames">
+        <div class="frame-wrap" style="flex:1 1 560px">
+          <div class="win">
+            <div class="win-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="win-url"></span></div>
+            <div class="win-body row" style="padding:0;align-items:stretch">
+              <!-- form -->
+              <div class="col rel" style="flex:1;padding:16px;gap:13px;min-width:0">
+                <span class="mk mk-abs" style="left:-8px;top:14px">1</span>
+                <div class="col" style="gap:6px"><div class="wbar sm d" style="width:26%"></div><div class="wblk" style="height:30px"></div></div>
+                <div class="row" style="gap:10px"><div class="col" style="gap:6px;flex:1"><div class="wbar sm d" style="width:40%"></div><div class="wblk" style="height:30px"></div></div><div class="col" style="gap:6px;flex:1"><div class="wbar sm d" style="width:40%"></div><div class="wblk" style="height:30px"></div></div></div>
+                <div class="col" style="gap:6px"><div class="wbar sm d" style="width:40%"></div><div class="row" style="gap:6px;flex-wrap:wrap"><span class="wpill on" style="width:60px"></span><span class="wpill on" style="width:48px"></span><span class="wpill" style="width:70px"></span><span class="wpill" style="width:40px"></span></div></div>
+                <div class="col" style="gap:6px"><div class="wbar sm d" style="width:22%"></div><div class="wblk" style="height:52px"></div></div>
+              </div>
+              <!-- preview -->
+              <div class="col rel" style="width:210px;flex:none;border-left:1px solid var(--line);background:var(--w-1);padding:16px;gap:11px">
+                <span class="mk mk-abs" style="right:-8px;top:14px">2</span>
+                <div class="wbar sm d" style="width:50%;opacity:.7"></div>
+                <div class="wblk" style="background:var(--card);padding:11px"><div class="row" style="gap:8px;margin-bottom:8px"><div class="wav" style="width:28px;height:28px;border-radius:50%"></div><div class="col" style="gap:5px;flex:1"><div class="wbar sm ink" style="width:75%"></div><div class="wbar sm" style="width:50%"></div></div></div><span class="wpill on" style="width:44px;height:16px;display:inline-block"></span></div>
+                <div class="wbtn" style="height:30px;margin-top:auto">Save draft</div>
+                <div class="wbtn primary" style="height:32px">Publish</div>
+              </div>
+            </div>
+          </div>
+          <div class="frame-cap">Desktop · form + live preview</div>
+        </div>
+      </div>
+      <ul class="anno">
+        <li><span class="mk">1</span> Sectioned form: Identity · Appointments · CPS panels &amp; levels · Specialisms · Bio · Notable cases · Headshot. Required-for-publish fields are marked.</li>
+        <li><span class="mk">2</span> Live preview of the client card/profile — "this is what clients see" — with the Save (quiet) and Publish (red, consequential) controls.</li>
+      </ul>
+
+      <div class="spec">
+        <div class="item"><p class="lab">Purpose</p><p class="txt">Low-risk creation and maintenance of a member record, with a clear draft→publish boundary.</p></div>
+        <div class="item"><p class="lab">Layout</p><p class="txt">Two-pane: sectioned form left, sticky live preview + save bar right. Section anchors for quick jumps.</p></div>
+        <div class="item"><p class="lab">Components</p><p class="txt">Text inputs · multi-select (specialisms; panels with per-panel level) · avatar uploader with crop · light rich-text for bio/notable cases · draft/publish control · live preview.</p></div>
+        <div class="item"><p class="lab">Interactions</p><p class="txt">Autosave draft with a "Saved" indicator; Publish flips visibility; validation gates publish; image upload crops + optimises; an unsaved-changes guard protects navigation away.</p></div>
+        <div class="item"><p class="lab">Responsive</p><p class="txt">Two-pane → single column; preview collapses to a "Preview" button opening a modal.</p></div>
+        <div class="item"><p class="lab">Loading</p><p class="txt">Section skeleton on open (edit mode); upload shows progress.</p></div>
+        <div class="item"><p class="lab">Empty</p><p class="txt">New member = empty form with clear labels, helpful placeholders, and required-field markers.</p></div>
+        <div class="item"><p class="lab">Error</p><p class="txt">Inline validation ("Year of call is required to publish"); Publish is blocked with a short summary of what's missing; upload errors are recoverable.</p></div>
+        <div class="item"><p class="lab">Animation</p><p class="txt">Save-bar states (Saving/Saved); preview updates live as you type (debounced). Calm throughout.</p></div>
+        <div class="item"><p class="lab">Hierarchy</p><p class="txt">Form is primary; preview reassures; Publish is the one weighty, red action. Save stays quiet.</p></div>
+      </div>
+    </section>
+
+    <!-- 08 TAXONOMY -->
+    <section class="plate" id="s08">
+      <div class="plate-head"><span class="plate-no">08</span><span class="plate-tag">Admin</span></div>
+      <h2 class="plate-t">Taxonomy</h2>
+      <p class="plate-purpose">Keeps panels, levels, specialisms and appointments current without a developer — because CPS panel structures change, and hard-coded vocabularies rot. Deliberately plain and safe: it is hard to break something here.</p>
+
+      <div class="frames">
+        <div class="frame-wrap" style="flex:1 1 500px">
+          <div class="win">
+            <div class="win-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="win-url"></span></div>
+            <div class="win-body" style="padding:16px">
+              <div class="row" style="gap:6px;margin-bottom:16px"><span class="wpill on" style="width:90px;height:26px"></span><span class="wpill" style="width:60px;height:26px"></span><span class="wpill" style="width:90px;height:26px"></span><span class="wpill" style="width:96px;height:26px"></span></div>
+              <div class="col rel" style="gap:8px">
+                <span class="mk mk-abs" style="right:-8px;top:2px">1</span>
+                <div class="row" style="gap:10px;align-items:center;padding:9px 10px;border:1px solid var(--line);border-radius:8px"><div class="wblk" style="width:12px;height:16px"></div><div class="wbar sm ink" style="width:120px"></div><div class="wbar sm" style="width:70px;margin-left:auto;opacity:.6"></div><div class="wblk" style="width:20px;height:20px"></div></div>
+                <div class="row" style="gap:10px;align-items:center;padding:9px 10px;border:1px solid var(--line);border-radius:8px"><div class="wblk" style="width:12px;height:16px"></div><div class="wbar sm ink" style="width:150px"></div><div class="wbar sm" style="width:60px;margin-left:auto;opacity:.6"></div><div class="wblk" style="width:20px;height:20px"></div></div>
+                <div class="row" style="gap:10px;align-items:center;padding:9px 10px;border:1px solid var(--line);border-radius:8px"><div class="wblk" style="width:12px;height:16px"></div><div class="wbar sm ink" style="width:100px"></div><div class="wbar sm" style="width:80px;margin-left:auto;opacity:.6"></div><div class="wblk" style="width:20px;height:20px"></div></div>
+                <div class="row" style="gap:10px;align-items:center;padding:9px 10px;border:1px dashed var(--w-3);border-radius:8px"><div class="wbar sm" style="width:90px;opacity:.5"></div><div class="wbtn" style="width:70px;height:24px;margin-left:auto">Add</div></div>
+              </div>
+            </div>
+          </div>
+          <div class="frame-cap">Desktop · editable vocabulary list</div>
+        </div>
+      </div>
+      <ul class="anno">
+        <li><span class="mk">1</span> Each term shows a usage count ("used by 12 counsel"). In-use terms can be <b>retired</b> (hidden from filters) but not deleted — member data is never orphaned.</li>
+      </ul>
+
+      <div class="spec">
+        <div class="item"><p class="lab">Purpose</p><p class="txt">Let clerks maintain the controlled vocabularies the whole directory filters on, safely and without code.</p></div>
+        <div class="item"><p class="lab">Layout</p><p class="txt">Segmented sections — CPS Panels · Levels · Specialisms · Appointments — each an editable list with add, rename, reorder and retire, plus a usage count per term.</p></div>
+        <div class="item"><p class="lab">Components</p><p class="txt">Segmented tabs · editable rows · inline add · drag handle · usage count · retire control.</p></div>
+        <div class="item"><p class="lab">Interactions</p><p class="txt">Add and rename inline; reorder by drag (ordering drives filter display order); retiring an in-use term warns, hides it from filters, and preserves history.</p></div>
+        <div class="item"><p class="lab">Responsive</p><p class="txt">Lists stack; drag handles remain touch-sized.</p></div>
+        <div class="item"><p class="lab">Loading</p><p class="txt">List skeleton on open.</p></div>
+        <div class="item"><p class="lab">Empty</p><p class="txt">"No specialisms yet. Add one to start tagging counsel."</p></div>
+        <div class="item"><p class="lab">Error</p><p class="txt">Deleting an in-use term is prevented with an explanation: "In use by 12 counsel — retire it instead." Save failures raise a toast.</p></div>
+        <div class="item"><p class="lab">Animation</p><p class="txt">Smooth reorder movement; a new row slides in on add. Subtle.</p></div>
+        <div class="item"><p class="lab">Hierarchy</p><p class="txt">Content lists dominate; destructive actions are de-emphasised and guarded.</p></div>
+      </div>
+    </section>
+
+    <!-- 09 SYSTEM -->
+    <section class="plate" id="s09" style="border-bottom:0">
+      <div class="plate-head"><span class="plate-no">09</span><span class="plate-tag">System-wide</span></div>
+      <h2 class="plate-t">States &amp; motion</h2>
+      <p class="plate-purpose">The connective tissue that keeps the product feeling premium under real conditions — slow networks, dead links, and quiet moments — plus the rules that keep motion and accessibility consistent everywhere.</p>
+
+      <div class="frames">
+        <div class="frame-wrap" style="flex:1 1 240px">
+          <div class="win"><div class="win-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="win-url"></span></div>
+            <div class="win-body" style="min-height:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;padding:20px;text-align:center"><div style="font-family:var(--serif);font-size:30px;color:var(--w-4)">404</div><div class="wbar sm" style="width:120px"></div><div class="wbtn primary" style="width:120px;height:28px;margin-top:6px">Back to directory</div></div>
+          </div>
+          <div class="frame-cap">Not found</div>
+        </div>
+        <div class="frame-wrap" style="flex:1 1 240px">
+          <div class="win"><div class="win-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="win-url"></span></div>
+            <div class="win-body" style="padding:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+              <div class="wblk" style="height:70px"></div><div class="wblk" style="height:70px"></div><div class="wblk" style="height:70px"></div><div class="wblk" style="height:70px"></div><div class="wblk" style="height:70px"></div><div class="wblk" style="height:70px"></div>
+            </div>
+          </div>
+          <div class="frame-cap">Loading · skeleton matches final layout</div>
+        </div>
+        <div class="frame-wrap" style="flex:1 1 240px">
+          <div class="win"><div class="win-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="win-url"></span></div>
+            <div class="win-body" style="min-height:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;padding:20px;text-align:center"><div class="wblk" style="width:34px;height:34px;border-radius:50%"></div><div class="wbar sm" style="width:150px"></div><div class="wbar sm" style="width:100px;opacity:.6"></div><div class="wbtn" style="width:90px;height:28px;margin-top:6px">Retry</div></div>
+          </div>
+          <div class="frame-cap">Error boundary</div>
+        </div>
+      </div>
+
+      <div class="spec">
+        <div class="item"><p class="lab">Loading philosophy</p><p class="txt">Content loads behind <b>skeletons that mirror the final layout</b> — never spinners. Spinners are reserved for discrete actions (submit, save). Because the directory is cached in the browser, most navigation is instant after first load.</p></div>
+        <div class="item"><p class="lab">Not found (404)</p><p class="txt">"This page isn't here." One route home. Branded and calm; the same treatment on client and admin sides.</p></div>
+        <div class="item"><p class="lab">Global error</p><p class="txt">"Something went wrong. Reload." A quiet error id for support. The error never leaks internals or blames the user.</p></div>
+        <div class="item"><p class="lab">Offline / stale</p><p class="txt">If the cached directory is served offline, a subtle chip reads "Showing the last saved version" rather than failing.</p></div>
+        <div class="item"><p class="lab">Toasts</p><p class="txt">Bottom, brief, one line, verbs that echo the action: "Published," "Link copied," "Saved." Auto-dismiss; never stack noisily.</p></div>
+        <div class="item"><p class="lab">Motion rules</p><p class="txt">Micro 100–120ms · UI 180ms ease-out · result reflow 150–200ms FLIP · sheets 260ms spring. Motion always explains cause and effect.</p></div>
+        <div class="item"><p class="lab">Reduced motion</p><p class="txt"><code>prefers-reduced-motion</code> collapses all movement to a simple opacity fade — no slides, springs, or position shifts.</p></div>
+        <div class="item"><p class="lab">Accessibility floor</p><p class="txt">WCAG 2.2 AA: visible keyboard focus, full keyboard navigation, AA contrast, labelled controls; sheets and modals trap focus and close on Esc.</p></div>
+        <div class="item"><p class="lab">Voice</p><p class="txt">Sentence case, plain verbs, no filler. Buttons say what happens ("Send enquiry," not "Submit"), and the name is kept through the flow. Errors direct; empties invite.</p></div>
+        <div class="item"><p class="lab">The one rule</p><p class="txt">Spend boldness in one place per screen — the red focal action — and keep everything else quiet. Elegance is executing that restraint precisely.</p></div>
+      </div>
+
+      <div class="callout" style="margin-top:44px"><b>What isn't drawn here.</b> Phase-2 admin surfaces — client-access management and the audit log — reuse the member-list patterns above (compact list, inline actions, guarded destructive operations) and don't warrant new primitives. Worth wireframing once their exact fields are settled alongside the access-model decision (D1 in the PRD).</div>
+    </section>
+  </main>
+</div>
