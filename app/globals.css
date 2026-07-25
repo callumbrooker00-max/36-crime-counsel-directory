@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+/*
+  Slice 1: only the core tokens needed to render the shell on-brand.
+  The full design-token set (components.md §1) lands in slice 2.
+*/
+:root {
+  --paper: #f5f5f2; /* cool neutral app background — deliberately not cream */
+  --card: #fcfcfb;
+  --ink: #17171b;
+  --ink-2: #55555e;
+  --ink-3: #8a8a92;
+  --line: #e4e3de;
+  --ribbon: #a81c30; /* the accent — brief-ribbon red; rationed to one focal thing per view */
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-card: var(--card);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-line: var(--line);
+  --color-ribbon: var(--ribbon);
+  --font-sans: var(--font-inter);
+  --font-serif: var(--font-spectral);
+  --font-mono: var(--font-ibm-plex-mono);
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-inter), system-ui, sans-serif;
+}
+
+/* prefers-reduced-motion respected from the first commit (quality floor). */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
