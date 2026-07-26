@@ -17,12 +17,22 @@ export default async function EditMemberPage({ params }: { params: Promise<{ id:
        counsel_roles ( role_id ),
        counsel_practice_areas ( practice_area_id, is_primary ),
        panel_memberships ( panel_id, grade_id, status ),
-       notable_cases ( title, citation, year, court, role_in_case, summary, display_order )`,
+       notable_cases ( title, citation, year, court, role_in_case, summary, display_order ),
+       images ( storage_key, alt_text, is_primary, type )`,
     )
     .eq("id", id)
     .eq("chambers_id", ctx.chambersId)
     .single();
   if (!m) notFound();
+
+  // Signed URL for the current primary headshot (bucket is private).
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const headshot = ((m.images ?? []) as any[]).find((im) => im.is_primary && im.type === "headshot");
+  let headshotUrl: string | null = null;
+  if (headshot) {
+    const { data: signed } = await supabase.storage.from("counsel-images").createSignedUrl(headshot.storage_key, 3600);
+    headshotUrl = signed?.signedUrl ?? null;
+  }
 
   const tenantOrGlobal = `chambers_id.eq.${ctx.chambersId},chambers_id.is.null`;
   const [roles, areas, panels, grades] = await Promise.all([
@@ -41,6 +51,8 @@ export default async function EditMemberPage({ params }: { params: Promise<{ id:
     practiceCapacity: m.practice_capacity,
     shortBio: m.short_bio ?? "",
     status: m.status,
+    headshotUrl,
+    headshotAlt: headshot?.alt_text ?? null,
     roleIds: (m.counsel_roles ?? []).map((r: any) => r.role_id),
     areas: (m.counsel_practice_areas ?? []).map((a: any) => ({ id: a.practice_area_id, isPrimary: a.is_primary })),
     panels: (m.panel_memberships ?? [])

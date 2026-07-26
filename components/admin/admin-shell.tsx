@@ -11,9 +11,12 @@ export function AdminShell({ email, children }: { email: string; children: React
           <Link href="/admin/members" className="font-serif text-md font-semibold text-ink">
             36 · Crime <span className="ml-1 font-mono text-[10px] font-normal uppercase tracking-[0.16em] text-ink-3">Admin</span>
           </Link>
-          <nav className="text-sm">
+          <nav className="flex gap-1 text-sm">
             <Link href="/admin/members" className="rounded-control px-2 py-1 text-ink-2 hover:bg-neutral-100 hover:text-ink">
               Members
+            </Link>
+            <Link href="/admin/taxonomy" className="rounded-control px-2 py-1 text-ink-2 hover:bg-neutral-100 hover:text-ink">
+              Taxonomy
             </Link>
           </nav>
           <div className="ml-auto flex items-center gap-3 text-sm text-ink-3">

@@ -30,6 +30,38 @@ export function Combobox({
     onChange(value.includes(v) ? value.filter((x) => x !== v) : [...value, v]);
   const labelFor = (v: string) => options.find((o) => o.value === v)?.label ?? v;
 
+  const [active, setActive] = React.useState(0);
+  // Reset the highlighted option when the query or open-state changes, without an effect.
+  const activeKey = `${q}|${open}`;
+  const [prevKey, setPrevKey] = React.useState(activeKey);
+  if (activeKey !== prevKey) {
+    setPrevKey(activeKey);
+    setActive(0);
+  }
+  function onKeyDown(e: React.KeyboardEvent) {
+    if (!open) {
+      if (e.key === "ArrowDown") {
+        setOpen(true);
+        e.preventDefault();
+      }
+      return;
+    }
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setActive((a) => Math.min(a + 1, filtered.length - 1));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setActive((a) => Math.max(a - 1, 0));
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      if (filtered[active]) toggle(filtered[active].value);
+    } else if (e.key === "Escape") {
+      setOpen(false);
+    } else if (e.key === "Backspace" && !q && value.length) {
+      onChange(value.slice(0, -1));
+    }
+  }
+
   return (
     <div className="flex flex-col gap-1.5">
       <span className="text-sm font-medium text-ink">{label}</span>
@@ -54,28 +86,34 @@ export function Combobox({
             </span>
           ))}
           <input
+            role="combobox"
+            aria-expanded={open}
+            aria-controls={`${label}-listbox`}
             value={q}
             onChange={(e) => setQ(e.target.value)}
             onFocus={() => setOpen(true)}
             onBlur={() => setTimeout(() => setOpen(false), 120)}
+            onKeyDown={onKeyDown}
             placeholder={value.length ? "" : placeholder}
             className="min-w-[6rem] flex-1 bg-transparent text-md text-ink outline-none placeholder:text-ink-3"
           />
         </div>
         {open && filtered.length > 0 && (
-          <ul className="absolute z-20 mt-1 max-h-56 w-full overflow-auto rounded-control border border-line bg-card py-1 shadow-overlay">
-            {filtered.map((o) => {
+          <ul id={`${label}-listbox`} role="listbox" className="absolute z-20 mt-1 max-h-56 w-full overflow-auto rounded-control border border-line bg-card py-1 shadow-overlay">
+            {filtered.map((o, i) => {
               const selected = value.includes(o.value);
               return (
-                <li key={o.value}>
+                <li key={o.value} role="option" aria-selected={selected}>
                   <button
                     type="button"
+                    onMouseEnter={() => setActive(i)}
                     onMouseDown={(e) => {
                       e.preventDefault(); // keep focus so the list stays open
                       toggle(o.value);
                     }}
                     className={cn(
-                      "flex w-full items-center justify-between px-3 py-1.5 text-left text-sm hover:bg-neutral-100",
+                      "flex w-full items-center justify-between px-3 py-1.5 text-left text-sm",
+                      i === active ? "bg-neutral-100" : "",
                       selected ? "text-ink" : "text-ink-2",
                     )}
                   >

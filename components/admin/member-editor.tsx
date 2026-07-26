@@ -8,6 +8,7 @@ import { SegmentedControl } from "@/components/ui/segmented-control";
 import { Button } from "@/components/ui/button";
 import { Combobox } from "@/components/ui/combobox";
 import { useToast } from "@/components/ui/toast";
+import { ImageUploader } from "@/components/admin/image-uploader";
 import { CounselCard } from "@/components/directory/counsel-card";
 import { saveMember, publishMember, type MemberInput } from "@/lib/admin/member-actions";
 import type { DirectoryCounsel, PracticeCapacity } from "@/types/directory";
@@ -26,6 +27,8 @@ export interface EditorMember {
   practiceCapacity: PracticeCapacity;
   shortBio: string;
   status: "draft" | "published" | "archived";
+  headshotUrl: string | null;
+  headshotAlt: string | null;
   roleIds: string[];
   areas: { id: string; isPrimary: boolean }[];
   panels: { panelId: string; gradeId: string | null }[];
@@ -66,6 +69,7 @@ export function MemberEditor({ member, vocab }: { member: EditorMember; vocab: E
   const [panels, setPanels] = React.useState(member.panels);
   const [cases, setCases] = React.useState<EditorCase[]>(member.cases);
   const [status, setStatus] = React.useState(member.status);
+  const [headshotUrl, setHeadshotUrl] = React.useState<string | null>(member.headshotUrl);
   const [saving, setSaving] = React.useState(false);
   const [saved, setSaved] = React.useState(false);
   const [dirty, setDirty] = React.useState(false);
@@ -165,7 +169,7 @@ export function MemberEditor({ member, vocab }: { member: EditorMember; vocab: E
         return { panelSlug: pv.slug, panelName: pv.name, type: pv.type, grade: gv?.name ?? null, gradeRank: gv?.rank ?? null };
       }),
     notableCases: [],
-    image: null,
+    image: headshotUrl ? { url: headshotUrl, alt: member.headshotAlt ?? fullName } : null,
     updatedAt: new Date().toISOString(),
   };
 
@@ -179,6 +183,16 @@ export function MemberEditor({ member, vocab }: { member: EditorMember; vocab: E
         </div>
 
         <div className="flex flex-col gap-5">
+          <Section label="Headshot">
+            <ImageUploader
+              counselId={member.id}
+              name={fullName || "New member"}
+              initialUrl={member.headshotUrl}
+              initialAlt={member.headshotAlt}
+              onChange={setHeadshotUrl}
+            />
+          </Section>
+
           <Section label="Identity">
             <Input label="Full name" required value={fullName} onChange={(e) => { setFullName(e.target.value); mark(); }} />
             <div className="flex gap-3">

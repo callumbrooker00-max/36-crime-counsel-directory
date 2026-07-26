@@ -16,7 +16,7 @@ The values behind the design language in the wireframe spec. Ship these as CSS c
 |-------|-------|-----|
 | `--ink` | `#17171B` | Primary text |
 | `--ink-2` | `#55555E` | Secondary text |
-| `--ink-3` | `#8A8A92` | Tertiary / captions |
+| `--ink-3` | `#6B6B74` | Tertiary / captions (darkened from `#8A8A92` to meet WCAG 2.2 AA 4.5:1 for small text) |
 | `--paper` | `#F5F5F2` | App background (cool neutral, deliberately not cream) |
 | `--card` | `#FCFCFB` | Card / surface |
 | `--line` | `#E4E3DE` | Hairline borders |

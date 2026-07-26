@@ -9,7 +9,7 @@
   /* ---- Colour ---- */
   --color-ink: #17171b; /* primary text */
   --color-ink-2: #55555e; /* secondary text */
-  --color-ink-3: #8a8a92; /* tertiary / captions */
+  --color-ink-3: #6b6b74; /* tertiary / captions — darkened from #8A8A92 to meet WCAG 2.2 AA (4.5:1) for small text */
   --color-paper: #f5f5f2; /* app background — cool neutral, not cream */
   --color-card: #fcfcfb; /* card / surface */
   --color-line: #e4e3de; /* hairline borders */
@@ -91,6 +91,12 @@ body {
 .sheet-right[data-state="closed"] { animation: sheet-out-right var(--motion-ui) var(--ease-out-soft) }
 .sheet-bottom[data-state="open"] { animation: sheet-in-bottom var(--motion-sheet) var(--ease-spring) }
 .sheet-bottom[data-state="closed"] { animation: sheet-out-bottom var(--motion-ui) var(--ease-out-soft) }
+
+/* ---------- Modal (Radix Dialog, centred) ---------- */
+.modal-overlay[data-state="open"] { animation: overlay-in var(--motion-ui) var(--ease-out-soft) }
+.modal-overlay[data-state="closed"] { animation: overlay-out var(--motion-ui) var(--ease-out-soft) }
+.modal-content[data-state="open"] { animation: overlay-in var(--motion-ui) var(--ease-out-soft) }
+.modal-content[data-state="closed"] { animation: overlay-out var(--motion-ui) var(--ease-out-soft) }
 
 /* ---------- Toast (Radix Toast) ---------- */
 .toast-root[data-state="open"] { animation: toast-in var(--motion-sheet) var(--ease-spring) }
