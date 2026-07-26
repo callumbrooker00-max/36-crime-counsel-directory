@@ -182,6 +182,8 @@ All require an admin session; all are tenant-scoped by the session's chambers.
 
 **Revalidation.** Every successful admin write enqueues a revalidation of the cached `/directory` (and `/counsel/{slug}` where relevant) for that chambers. This is an internal mechanism, not a public endpoint; the effect is that published changes reach clients within seconds.
 
+> **Implementation note (as built, slice 6).** The admin write path above is realised as **Next.js Server Actions**, not REST route handlers. Each action re-checks the caller's **tenant-scoped** membership (an active clerk-or-above membership in *this* chambers, from `memberships`), writes via the user-scoped client so **RLS** re-enforces the same rule, and then calls **`updateTag(`directory:<slug>`)`** (Next 16's read-your-own-writes tag invalidation). `getDirectory` and the `counsel-slugs` 404 gate share that tag, so the public directory, deep-link profiles, and the 404 gate all refresh together within seconds. The REST shapes above map 1:1 to these actions (`createMember`, `saveMember`, `publishMember`, `unpublishMember`, …). The public read path (`GET /directory`, `GET /counsel/{slug}` behaviour) is unchanged. Enquiries remain a real route handler (`POST /api/enquiries`).
+
 ---
 
 ## 6. Pagination, filtering, sorting (admin lists)
