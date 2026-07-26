@@ -5,6 +5,7 @@ import { rateLimit } from "@/lib/rate-limit";
 import { notifyEnquiryReceived } from "@/lib/email/notify-enquiry";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { DEFAULT_CHAMBERS_SLUG } from "@/lib/directory/get-directory";
+import { clientAccessStatus, isPermitted } from "@/lib/auth/client-gate";
 
 function envelope(
   code: string,
@@ -22,6 +23,11 @@ function envelope(
 // Public write, so: validate, rate-limit, then insert via the trusted server
 // context (service role). Client can never write this table directly.
 export async function POST(request: Request) {
+  // Enquiries are part of the gated portal — no valid client session → 401.
+  if (!isPermitted(await clientAccessStatus())) {
+    return envelope("unauthenticated", "Sign in to send an enquiry.", 401);
+  }
+
   let json: unknown;
   try {
     json = await request.json();

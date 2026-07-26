@@ -1,35 +1,43 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
 
-export const config = { matcher: ["/counsel/:slug*", "/admin/:path*"] };
+export const config = { matcher: ["/", "/counsel/:path*", "/admin/:path*"] };
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // --- Admin: refresh session + guard (redirect unauthenticated to sign-in) ---
+  // Client access gate (PRD D1). Flag-controlled; the dev bypass is inert in
+  // production (NODE_ENV is "production" there), so it can never open prod.
+  const gateActive =
+    process.env.CLIENT_GATE_ENABLED === "true" &&
+    !(process.env.NODE_ENV !== "production" && process.env.CLIENT_GATE_DEV_BYPASS === "true");
+
+  // --- Admin: refresh session + guard ---
   if (pathname.startsWith("/admin")) {
     const { user, response } = await updateSession(request);
     const isSignIn = pathname === "/admin/sign-in";
-    if (!user && !isSignIn) {
-      return NextResponse.redirect(new URL("/admin/sign-in", request.url));
-    }
-    if (user && isSignIn) {
-      return NextResponse.redirect(new URL("/admin/members", request.url));
-    }
+    if (!user && !isSignIn) return NextResponse.redirect(new URL("/admin/sign-in", request.url));
+    if (user && isSignIn) return NextResponse.redirect(new URL("/admin/members", request.url));
     return response;
+  }
+
+  // --- Client portal pages: require a session when the gate is on (true 307
+  //     before the page renders). The allowlist re-check + API 401s live in the
+  //     server entrypoints. ---
+  if (gateActive) {
+    const { user } = await updateSession(request);
+    if (!user) return NextResponse.redirect(new URL("/access", request.url));
   }
 
   // --- Counsel profiles: strict 404 for unknown/unpublished/archived slugs ---
   const slug = pathname.split("/")[2];
-  if (slug) {
+  if (pathname.startsWith("/counsel") && slug) {
     try {
       const res = await fetch(new URL("/api/internal/counsel-slugs", request.url), {
         headers: { "x-middleware": "counsel-404" },
       });
       if (res.ok) {
         const { slugs } = (await res.json()) as { slugs: string[] | null };
-        // 404 only with a definitive list; otherwise fall through so a valid
-        // profile is never wrongly blocked.
         if (Array.isArray(slugs) && !slugs.includes(slug)) {
           return NextResponse.rewrite(new URL("/profile-unavailable", request.url), { status: 404 });
         }

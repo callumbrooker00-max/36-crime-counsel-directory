@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { getDirectory } from "@/lib/directory/get-directory";
+import { clientAccessStatus, isPermitted } from "@/lib/auth/client-gate";
 import { ProfileView } from "@/components/profile/profile-view";
+
+// Never static: the access gate must run per request.
+export const dynamic = "force-dynamic";
 
 async function findCounsel(slug: string) {
   const payload = await getDirectory();
@@ -25,6 +29,7 @@ export async function generateMetadata({
 // Full profile (wireframe screen 03), deep-linkable. Unknown/unpublished slug
 // → notFound() → branded not-found.tsx + 404.
 export default async function ProfilePage({ params }: { params: Promise<{ slug: string }> }) {
+  if (!isPermitted(await clientAccessStatus())) redirect("/access");
   const { slug } = await params;
   const { payload, counsel } = await findCounsel(slug);
   if (!counsel) notFound();
