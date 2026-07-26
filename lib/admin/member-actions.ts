@@ -88,6 +88,7 @@ export interface MemberInput {
   yearOfCall: number | null;
   practiceCapacity: "prosecution" | "defence" | "both";
   shortBio: string;
+  profileUrl: string | null;
   roleIds: string[];
   areas: { id: string; isPrimary: boolean }[];
   panels: { panelId: string; gradeId: string | null }[];
@@ -134,6 +135,7 @@ export async function saveMember(id: string, input: MemberInput): Promise<Action
       year_of_call: input.yearOfCall,
       practice_capacity: input.practiceCapacity,
       short_bio: input.shortBio.trim() || null,
+      profile_url: input.profileUrl?.trim() || null,
       updated_by: ctx.userId,
     })
     .eq("id", id);

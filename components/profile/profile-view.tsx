@@ -13,6 +13,14 @@ import { SectionLabel } from "./section-label";
 import { EnquirySheet } from "./enquiry-sheet";
 import type { DirectoryCounsel } from "@/types/directory";
 
+function profileHost(url: string): string {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return "chambers site";
+  }
+}
+
 export function ProfileView({
   counsel,
   caseTypes,
@@ -46,7 +54,19 @@ export function ProfileView({
 
       <div className="flex flex-col gap-8 md:flex-row md:items-start">
         <div className="min-w-0 flex-1 space-y-8">
-          <ProfileHeader counsel={counsel} />
+          <div className="space-y-2">
+            <ProfileHeader counsel={counsel} />
+            {counsel.profileUrl && (
+              <a
+                href={counsel.profileUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 font-mono text-xs text-ink-3 underline-offset-2 hover:text-ink hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+              >
+                Full profile at {profileHost(counsel.profileUrl)} ↗
+              </a>
+            )}
+          </div>
           <PanelBadgeList panels={counsel.panels} />
           <SpecialismList practiceAreas={counsel.practiceAreas} />
           {counsel.shortBio && (

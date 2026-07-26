@@ -13,7 +13,7 @@ export default async function EditMemberPage({ params }: { params: Promise<{ id:
   const { data: m } = await supabase
     .from("counsel")
     .select(
-      `id, full_name, slug, year_of_call, practice_capacity, short_bio, status,
+      `id, full_name, slug, year_of_call, practice_capacity, short_bio, profile_url, status,
        counsel_roles ( role_id ),
        counsel_practice_areas ( practice_area_id, is_primary ),
        panel_memberships ( panel_id, grade_id, status ),
@@ -50,6 +50,7 @@ export default async function EditMemberPage({ params }: { params: Promise<{ id:
     yearOfCall: m.year_of_call,
     practiceCapacity: m.practice_capacity,
     shortBio: m.short_bio ?? "",
+    profileUrl: m.profile_url ?? "",
     status: m.status,
     headshotUrl,
     headshotAlt: headshot?.alt_text ?? null,

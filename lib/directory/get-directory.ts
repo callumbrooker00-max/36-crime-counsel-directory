@@ -38,7 +38,7 @@ async function buildDirectoryPayload(slug: string): Promise<DirectoryPayload> {
     db
       .from("counsel")
       .select(
-        `id, slug, full_name, year_of_call, practice_capacity, short_bio, updated_at,
+        `id, slug, full_name, year_of_call, practice_capacity, short_bio, profile_url, updated_at,
          counsel_roles ( roles ( slug, name, abbreviation ) ),
          counsel_practice_areas ( is_primary, practice_areas ( slug, name ) ),
          panel_memberships ( status, grades ( slug, name, rank ), panels ( slug, name, type ) ),
@@ -74,6 +74,7 @@ async function buildDirectoryPayload(slug: string): Promise<DirectoryPayload> {
         yearOfCall: c.year_of_call,
         practiceCapacity: c.practice_capacity as PracticeCapacity,
         shortBio: c.short_bio,
+        profileUrl: c.profile_url,
         updatedAt: c.updated_at,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         roles: (c.counsel_roles ?? []).map((cr: any) => ({

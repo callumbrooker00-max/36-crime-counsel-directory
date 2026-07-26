@@ -26,6 +26,7 @@ export interface EditorMember {
   yearOfCall: number | null;
   practiceCapacity: PracticeCapacity;
   shortBio: string;
+  profileUrl: string;
   status: "draft" | "published" | "archived";
   headshotUrl: string | null;
   headshotAlt: string | null;
@@ -64,6 +65,7 @@ export function MemberEditor({ member, vocab }: { member: EditorMember; vocab: E
   const [yearOfCall, setYearOfCall] = React.useState<number | null>(member.yearOfCall);
   const [capacity, setCapacity] = React.useState<PracticeCapacity>(member.practiceCapacity);
   const [bio, setBio] = React.useState(member.shortBio);
+  const [profileUrl, setProfileUrl] = React.useState(member.profileUrl);
   const [roleIds, setRoleIds] = React.useState<string[]>(member.roleIds);
   const [areas, setAreas] = React.useState(member.areas);
   const [panels, setPanels] = React.useState(member.panels);
@@ -104,6 +106,7 @@ export function MemberEditor({ member, vocab }: { member: EditorMember; vocab: E
       yearOfCall,
       practiceCapacity: capacity,
       shortBio: bio,
+      profileUrl,
       roleIds,
       areas,
       panels: panels.filter((p) => p.panelId),
@@ -151,6 +154,7 @@ export function MemberEditor({ member, vocab }: { member: EditorMember; vocab: E
     yearOfCall,
     practiceCapacity: capacity,
     shortBio: bio,
+    profileUrl: profileUrl || null,
     roles: roleIds
       .map((id) => vocab.roles.find((r) => r.id === id))
       .filter(Boolean)
@@ -211,6 +215,13 @@ export function MemberEditor({ member, vocab }: { member: EditorMember; vocab: E
               </div>
             </div>
             <Textarea label="Short bio" value={bio} onChange={(e) => { setBio(e.target.value); mark(); }} />
+            <Input
+              label="Website URL"
+              type="url"
+              placeholder="https://36group.co.uk/…"
+              value={profileUrl}
+              onChange={(e) => { setProfileUrl(e.target.value); mark(); }}
+            />
           </Section>
 
           <Section label="Appointments">

@@ -68,6 +68,7 @@ export interface DirectoryCounsel {
   yearOfCall: number | null;
   practiceCapacity: PracticeCapacity;
   shortBio: string | null;
+  profileUrl: string | null;
   roles: CounselRole[];
   practiceAreas: CounselPracticeArea[];
   panels: CounselPanel[];
