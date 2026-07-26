@@ -7,9 +7,9 @@ export function SpecialismList({ practiceAreas }: { practiceAreas: CounselPracti
   return (
     <section>
       <SectionLabel>Specialisms</SectionLabel>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2.5">
         {practiceAreas.map((a) => (
-          <Badge key={a.slug} variant="specialism">
+          <Badge key={a.slug} variant="specialism" className="px-3.5 py-1.5 text-sm">
             {a.name}
           </Badge>
         ))}

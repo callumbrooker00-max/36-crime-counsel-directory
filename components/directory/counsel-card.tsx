@@ -11,26 +11,28 @@ export function CounselCard({ counsel }: { counsel: DirectoryCounsel }) {
   return (
     <Link
       href={`/counsel/${counsel.slug}`}
-      className="group flex flex-col rounded-card border border-line bg-card p-4 transition-shadow duration-[var(--motion-micro)] hover:shadow-overlay focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-paper"
+      className="lift group flex flex-col rounded-card border border-line bg-card p-6 shadow-card hover:border-neutral-300 hover:shadow-card-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-paper"
     >
-      <div className="flex items-center gap-3">
-        <Avatar name={counsel.fullName} src={counsel.image?.url} alt={counsel.image?.alt} size="md" />
-        <div className="min-w-0">
-          <h3 className="truncate font-serif text-lg font-medium leading-tight text-ink">{counsel.fullName}</h3>
-          {counsel.yearOfCall != null && (
-            <p className="mt-0.5 font-mono text-xs text-ink-3">Called {counsel.yearOfCall}</p>
-          )}
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex min-w-0 flex-1 items-start gap-4">
+          <Avatar name={counsel.fullName} src={counsel.image?.url} alt={counsel.image?.alt} size="md" />
+          <div className="min-w-0 pt-0.5">
+            <h3 className="line-clamp-2 font-serif text-xl font-medium leading-snug text-ink">{counsel.fullName}</h3>
+            <p className="mt-1.5 font-mono text-[11px] uppercase tracking-[0.12em] text-ink-3">
+              {counsel.yearOfCall != null ? `Called ${counsel.yearOfCall} · ` : ""}
+              {capacityLabel(counsel.practiceCapacity)}
+            </p>
+          </div>
         </div>
+        {badge && <Badge variant="panel-level" className="shrink-0">{badge.name}</Badge>}
       </div>
 
-      <div className="mt-3 flex flex-wrap items-center gap-1.5">
-        {badge && <Badge variant="panel-level">{badge.name}</Badge>}
-        {primaryArea && <Badge variant="specialism">{primaryArea.name}</Badge>}
+      <div className="mt-6 flex items-center justify-between gap-3 border-t border-line-2 pt-4">
+        {primaryArea ? <Badge variant="specialism">{primaryArea.name}</Badge> : <span />}
+        <span className="shrink-0 font-mono text-[11px] uppercase tracking-[0.1em] text-ink-3 opacity-0 transition-opacity duration-[var(--motion-ui)] group-hover:opacity-100">
+          View profile →
+        </span>
       </div>
-
-      <p className="mt-2 font-mono text-[11px] uppercase tracking-[0.08em] text-ink-3">
-        {capacityLabel(counsel.practiceCapacity)}
-      </p>
     </Link>
   );
 }

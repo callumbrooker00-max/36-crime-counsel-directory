@@ -83,37 +83,39 @@ export function DirectoryClient({ payload }: { payload: DirectoryPayload }) {
   );
 
   return (
-    <div className="mx-auto w-full max-w-[1240px] px-4 sm:px-6 lg:px-8">
-      <header className="sticky top-0 z-10 -mx-4 flex items-center gap-3 border-b border-line bg-paper/90 px-4 py-3 backdrop-blur-sm sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
-        <Link href="/" className="shrink-0 font-serif text-md font-semibold tracking-tight text-ink">
-          36 · Crime
-        </Link>
-        <SearchInput value={q} onChange={onSearch} className="max-w-md flex-1" />
-        <div className="ml-auto flex items-center gap-3">
-          <ResultCount count={results.length} />
-          <div className="hidden sm:block">
-            <SortControl value={criteria.sort} onChange={(sort) => update({ sort })} />
+    <div className="mx-auto w-full max-w-[1600px] px-5 sm:px-8 lg:px-12">
+      <header className="sticky top-0 z-20 -mx-5 border-b border-line/80 bg-paper/75 px-5 backdrop-blur-xl sm:-mx-8 sm:px-8 lg:-mx-12 lg:px-12">
+        <div className="flex items-center gap-4 py-4">
+          <Link href="/" className="shrink-0 font-serif text-lg font-semibold tracking-tight text-ink">
+            36 <span className="text-ink-3">·</span> Crime
+          </Link>
+          <SearchInput value={q} onChange={onSearch} className="mx-auto w-full max-w-xl flex-1" />
+          <div className="ml-auto flex items-center gap-3">
+            <ResultCount count={results.length} />
+            <div className="hidden sm:block">
+              <SortControl value={criteria.sort} onChange={(sort) => update({ sort })} />
+            </div>
+            <FilterSheet
+              filters={payload.filters}
+              criteria={criteria}
+              onChange={update}
+              resultCount={results.length}
+              activeCount={activeFilterCount(criteria)}
+            />
           </div>
-          <FilterSheet
-            filters={payload.filters}
-            criteria={criteria}
-            onChange={update}
-            resultCount={results.length}
-            activeCount={activeFilterCount(criteria)}
-          />
         </div>
       </header>
 
-      <div className="flex gap-8 py-6">
-        <aside className="hidden w-[240px] shrink-0 md:block">
-          <div className="sticky top-[68px]">
+      <div className="flex gap-10 py-8 lg:gap-16 lg:py-12">
+        <aside className="hidden w-64 shrink-0 md:block">
+          <div className="sticky top-[88px]">
             <FilterControls filters={payload.filters} criteria={criteria} onChange={update} />
           </div>
         </aside>
 
         <div className="min-w-0 flex-1">
           {activeFilterCount(criteria) > 0 && (
-            <div className="mb-4">
+            <div className="mb-6">
               <ActiveFilterChips
                 filters={payload.filters}
                 criteria={criteria}

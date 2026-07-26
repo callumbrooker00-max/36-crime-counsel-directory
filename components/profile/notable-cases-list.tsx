@@ -6,17 +6,17 @@ export function NotableCasesList({ cases }: { cases: CounselNotableCase[] }) {
   return (
     <section>
       <SectionLabel>Notable cases</SectionLabel>
-      <ul className="flex flex-col gap-5">
+      <ul className="flex flex-col divide-y divide-line-2">
         {cases.map((c, i) => {
           const meta = [c.roleInCase, c.year?.toString(), c.court].filter(Boolean).join(" · ");
           return (
-            <li key={i}>
-              <p className="text-md font-medium text-ink">
+            <li key={i} className="py-5 first:pt-0">
+              <p className="font-serif text-lg font-medium leading-snug text-ink">
                 {c.title}
-                {c.citation ? <span className="font-normal text-ink-3"> {c.citation}</span> : null}
+                {c.citation ? <span className="font-sans text-md font-normal text-ink-3"> {c.citation}</span> : null}
               </p>
-              {meta && <p className="mt-0.5 font-mono text-xs text-ink-3">{meta}</p>}
-              {c.summary && <p className="mt-1 max-w-prose text-md text-ink-2">{c.summary}</p>}
+              {meta && <p className="mt-1 font-mono text-xs uppercase tracking-[0.08em] text-ink-3">{meta}</p>}
+              {c.summary && <p className="mt-2 max-w-prose text-md leading-relaxed text-ink-2">{c.summary}</p>}
             </li>
           );
         })}

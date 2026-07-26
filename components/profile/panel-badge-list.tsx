@@ -8,9 +8,9 @@ export function PanelBadgeList({ panels }: { panels: CounselPanel[] }) {
   return (
     <section>
       <SectionLabel>CPS panels</SectionLabel>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2.5">
         {panels.map((p) => (
-          <Badge key={p.panelSlug} variant="panel-level">
+          <Badge key={p.panelSlug} variant="panel-level" className="px-3.5 py-1.5 text-sm">
             {p.panelName}
             {p.grade ? ` · ${p.grade}` : ""}
           </Badge>

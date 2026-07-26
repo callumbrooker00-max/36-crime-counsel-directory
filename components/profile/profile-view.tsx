@@ -42,26 +42,26 @@ export function ProfileView({
   }
 
   return (
-    <main className="mx-auto w-full max-w-[1000px] px-4 pb-28 sm:px-6 md:pb-14 lg:px-8">
-      <div className="py-4">
+    <main className="mx-auto w-full max-w-[1200px] px-5 pb-28 sm:px-8 lg:px-12 lg:pb-20">
+      <div className="py-6">
         <button
           onClick={() => router.back()}
-          className="font-mono text-xs uppercase tracking-[0.08em] text-ink-3 transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+          className="font-mono text-xs uppercase tracking-[0.12em] text-ink-3 transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
         >
           ← Back to directory
         </button>
       </div>
 
-      <div className="flex flex-col gap-8 md:flex-row md:items-start">
-        <div className="min-w-0 flex-1 space-y-8">
-          <div className="space-y-2">
+      <div className="flex flex-col gap-12 lg:flex-row lg:items-start lg:gap-16">
+        <div className="min-w-0 flex-1 space-y-12">
+          <div className="space-y-3">
             <ProfileHeader counsel={counsel} />
             {counsel.profileUrl && (
               <a
                 href={counsel.profileUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 font-mono text-xs text-ink-3 underline-offset-2 hover:text-ink hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                className="inline-flex items-center gap-1 font-mono text-xs text-ink-3 underline-offset-4 transition-colors hover:text-ink hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
               >
                 Full profile at {profileHost(counsel.profileUrl)} ↗
               </a>
@@ -72,22 +72,22 @@ export function ProfileView({
           {counsel.shortBio && (
             <section>
               <SectionLabel>About</SectionLabel>
-              <p className="max-w-prose text-md leading-relaxed text-ink-2">{counsel.shortBio}</p>
+              <p className="max-w-prose text-lg leading-relaxed text-ink-2">{counsel.shortBio}</p>
             </section>
           )}
           <NotableCasesList cases={counsel.notableCases} />
         </div>
 
-        <aside className="hidden w-[260px] shrink-0 md:block">
-          <div className="sticky top-6">
+        <aside className="hidden w-[340px] shrink-0 lg:block">
+          <div className="sticky top-8">
             <CredentialsRail counsel={counsel} onContact={() => setEnquiryOpen(true)} onShare={share} />
           </div>
         </aside>
       </div>
 
-      {/* Mobile: CTA pinned in thumb reach (wireframe screen 03). */}
-      <div className="fixed inset-x-0 bottom-0 z-20 border-t border-line bg-paper/95 p-3 backdrop-blur-sm md:hidden">
-        <Button variant="primary" className="w-full" onClick={() => setEnquiryOpen(true)}>
+      {/* Mobile/tablet: CTA pinned in thumb reach (wireframe screen 03). */}
+      <div className="fixed inset-x-0 bottom-0 z-20 border-t border-line bg-paper/90 p-3 backdrop-blur-xl lg:hidden">
+        <Button variant="primary" size="md" className="w-full" onClick={() => setEnquiryOpen(true)}>
           Contact clerks
         </Button>
       </div>
