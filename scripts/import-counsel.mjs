@@ -23,7 +23,7 @@ const APPLY = flags.includes("--apply");
 const CHAMBERS_SLUG = process.env.CHAMBERS_SLUG ?? "36-crime";
 const BUCKET = "counsel-images";
 const NATIONAL_PANELS = ["General Crime", "Serious Crime", "RASSO", "Fraud", "Proceeds of Crime", "Counter Terrorism", "Extradition"];
-const NIL = new Set(["", "nil", "n/a", "na", "-", "none"]);
+const NIL = new Set(["", "nil", "n/a", "na", "-", "none", "no pic", "no picture", "no photo", "tbc"]);
 
 if (!filePath) {
   console.error("Usage: node --env-file=.env.local scripts/import-counsel.mjs <file.xlsx> [--apply]");
@@ -106,10 +106,10 @@ for (let r = 2; r <= sheet.rowCount; r++) {
   if (!name) continue;
 
   const grading = text(cell(row, "Grading"));
-  const usualRole = text(cell(row, "Usual Role"));
   const yoc = parseInt(text(cell(row, "Year of Call")), 10);
   const websiteUrl = text(cell(row, "Website URL"));
-  const imageUrl = text(cell(row, "Image URL"));
+  const imageRaw = text(cell(row, "Image URL"));
+  const imageUrl = NIL.has(norm(imageRaw)) ? "" : imageRaw; // "No pic" etc → no headshot
 
   // specialisms — strict
   const specialismIds = [];
@@ -123,12 +123,12 @@ for (let r = 2; r <= sheet.rowCount; r++) {
     }
   }
 
-  // roles — Usual Role (strict) + King's Counsel when Grading = KC
+  // roles — Usual Role (semicolon-separated, strict) + King's Counsel when Grading = KC
   const roleIds = [];
-  if (usualRole) {
-    const hit = roleByNorm.get(norm(usualRole));
+  for (const roleName of splitMulti(cell(row, "Usual Role"))) {
+    const hit = roleByNorm.get(norm(roleName));
     if (hit) roleIds.push(hit.id);
-    else unmatchedRoles.set(usualRole, { count: (unmatchedRoles.get(usualRole)?.count ?? 0) + 1, near: nearest(usualRole, roleRows) });
+    else unmatchedRoles.set(roleName, { count: (unmatchedRoles.get(roleName)?.count ?? 0) + 1, near: nearest(roleName, roleRows) });
   }
   const isKC = norm(grading) === "kc";
   if (isKC) {
