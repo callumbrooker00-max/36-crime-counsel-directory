@@ -1,9 +1,8 @@
 import { cn } from "@/lib/utils";
-import { capacityLabel } from "@/lib/directory/display";
 import type { DirectoryCriteria } from "@/lib/directory/query-state";
-import type { DirectoryFilters, PracticeCapacity } from "@/types/directory";
+import type { DirectoryFilters } from "@/types/directory";
 
-// Refined toggle for short, scannable sets (levels, seniority, capacity).
+// Refined toggle for short, scannable sets (seniority).
 function Pill({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
   return (
     <button
@@ -58,8 +57,6 @@ function Group({ label, first, children }: { label: string; first?: boolean; chi
   );
 }
 
-const CAPACITIES: PracticeCapacity[] = ["prosecution", "defence", "both"];
-
 export function FilterControls({
   filters,
   criteria,
@@ -73,47 +70,13 @@ export function FilterControls({
     const arr = criteria[key];
     onChange({ [key]: arr.includes(value) ? arr.filter((v) => v !== value) : [...arr, value] });
   };
-  const toggleLevel = (rank: number) => {
-    const arr = criteria.levels;
-    onChange({ levels: arr.includes(rank) ? arr.filter((v) => v !== rank) : [...arr, rank] });
-  };
 
   const seniorityRoles = filters.roles.filter((r) => r.slug === "kc" || r.slug === "junior");
 
   return (
     <div className="flex flex-col gap-6">
-      <Group label="Specialism" first>
-        <div className="-mx-2 flex flex-col gap-0.5">
-          {filters.practiceAreas.map((a) => (
-            <CheckRow key={a.slug} active={criteria.specialisms.includes(a.slug)} onClick={() => toggleStr("specialisms", a.slug)}>
-              {a.name}
-            </CheckRow>
-          ))}
-        </div>
-      </Group>
-
-      <Group label="CPS panel level">
-        <div className="flex flex-wrap gap-2">
-          {filters.grades.map((g) => (
-            <Pill key={g.slug} active={criteria.levels.includes(g.rank)} onClick={() => toggleLevel(g.rank)}>
-              {g.name}
-            </Pill>
-          ))}
-        </div>
-      </Group>
-
-      <Group label="Specialist panels">
-        <div className="-mx-2 flex flex-col gap-0.5">
-          {filters.panels.map((p) => (
-            <CheckRow key={p.slug} active={criteria.panels.includes(p.slug)} onClick={() => toggleStr("panels", p.slug)}>
-              {p.name}
-            </CheckRow>
-          ))}
-        </div>
-      </Group>
-
       {seniorityRoles.length > 0 && (
-        <Group label="Seniority">
+        <Group label="Seniority" first>
           <div className="flex flex-wrap gap-2">
             {seniorityRoles.map((r) => (
               <Pill key={r.slug} active={criteria.seniority.includes(r.slug)} onClick={() => toggleStr("seniority", r.slug)}>
@@ -124,7 +87,7 @@ export function FilterControls({
         </Group>
       )}
 
-      <Group label="Year of call">
+      <Group label="Year of call" first={seniorityRoles.length === 0}>
         <div className="flex items-center gap-2.5">
           <input
             type="number"
@@ -148,16 +111,22 @@ export function FilterControls({
         </div>
       </Group>
 
-      <Group label="Practice capacity">
-        <div className="flex flex-wrap gap-2">
-          {CAPACITIES.map((cap) => (
-            <Pill
-              key={cap}
-              active={criteria.capacity === cap}
-              onClick={() => onChange({ capacity: criteria.capacity === cap ? null : cap })}
-            >
-              {capacityLabel(cap)}
-            </Pill>
+      <Group label="Specialism">
+        <div className="-mx-2 flex flex-col gap-0.5">
+          {filters.practiceAreas.map((a) => (
+            <CheckRow key={a.slug} active={criteria.specialisms.includes(a.slug)} onClick={() => toggleStr("specialisms", a.slug)}>
+              {a.name}
+            </CheckRow>
+          ))}
+        </div>
+      </Group>
+
+      <Group label="Specialist panels">
+        <div className="-mx-2 flex flex-col gap-0.5">
+          {filters.panels.map((p) => (
+            <CheckRow key={p.slug} active={criteria.panels.includes(p.slug)} onClick={() => toggleStr("panels", p.slug)}>
+              {p.name}
+            </CheckRow>
           ))}
         </div>
       </Group>

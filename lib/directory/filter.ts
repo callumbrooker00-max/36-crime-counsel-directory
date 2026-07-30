@@ -61,9 +61,16 @@ export function applyFilters(counsel: DirectoryCounsel[], c: DirectoryCriteria):
     return true;
   });
 
+  // Silks outrank all juniors regardless of call year (a KC is the senior brief).
+  const isSilk = (p: DirectoryCounsel) => p.roles.some((r) => r.slug === "kc");
+
   result.sort((a, b) => {
     if (c.sort === "name") return a.fullName.localeCompare(b.fullName);
-    // call-year: most senior (earliest call) first; nulls last.
+    // Most senior: KCs/silks first, then juniors; within each group earliest
+    // call first, and anyone missing a call year falls to the bottom of their group.
+    const silkA = isSilk(a) ? 0 : 1;
+    const silkB = isSilk(b) ? 0 : 1;
+    if (silkA !== silkB) return silkA - silkB;
     const ay = a.yearOfCall ?? Number.POSITIVE_INFINITY;
     const by = b.yearOfCall ?? Number.POSITIVE_INFINITY;
     return ay - by || a.fullName.localeCompare(b.fullName);
