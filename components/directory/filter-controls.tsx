@@ -82,7 +82,17 @@ export function FilterControls({
 
   return (
     <div className="flex flex-col gap-6">
-      <Group label="CPS panel level" first>
+      <Group label="Specialism" first>
+        <div className="-mx-2 flex flex-col gap-0.5">
+          {filters.practiceAreas.map((a) => (
+            <CheckRow key={a.slug} active={criteria.specialisms.includes(a.slug)} onClick={() => toggleStr("specialisms", a.slug)}>
+              {a.name}
+            </CheckRow>
+          ))}
+        </div>
+      </Group>
+
+      <Group label="CPS panel level">
         <div className="flex flex-wrap gap-2">
           {filters.grades.map((g) => (
             <Pill key={g.slug} active={criteria.levels.includes(g.rank)} onClick={() => toggleLevel(g.rank)}>
@@ -135,16 +145,6 @@ export function FilterControls({
             onChange={(e) => onChange({ callTo: e.target.value ? Number(e.target.value) : null })}
             className="h-9 w-24 rounded-control border border-transparent bg-neutral-100 px-3 text-sm text-ink transition-colors focus:bg-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
           />
-        </div>
-      </Group>
-
-      <Group label="Specialism">
-        <div className="-mx-2 flex flex-col gap-0.5">
-          {filters.practiceAreas.map((a) => (
-            <CheckRow key={a.slug} active={criteria.specialisms.includes(a.slug)} onClick={() => toggleStr("specialisms", a.slug)}>
-              {a.name}
-            </CheckRow>
-          ))}
         </div>
       </Group>
 

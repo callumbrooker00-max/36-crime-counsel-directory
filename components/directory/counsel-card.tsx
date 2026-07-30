@@ -11,23 +11,21 @@ export function CounselCard({ counsel }: { counsel: DirectoryCounsel }) {
   return (
     <Link
       href={`/counsel/${counsel.slug}`}
-      className="lift group flex flex-col rounded-card border border-line bg-card p-6 shadow-card hover:border-neutral-300 hover:shadow-card-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-paper"
+      className="lift group relative flex flex-col rounded-card border border-line/60 bg-card p-7 shadow-card hover:border-line hover:shadow-card-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-paper"
     >
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex min-w-0 flex-1 items-start gap-4">
-          <Avatar name={counsel.fullName} src={counsel.image?.url} alt={counsel.image?.alt} size="md" />
-          <div className="min-w-0 pt-0.5">
-            <h3 className="line-clamp-2 font-serif text-xl font-medium leading-snug text-ink">{counsel.fullName}</h3>
-            <p className="mt-1.5 font-mono text-[11px] uppercase tracking-[0.12em] text-ink-3">
-              {counsel.yearOfCall != null ? `Called ${counsel.yearOfCall} · ` : ""}
-              {capacityLabel(counsel.practiceCapacity)}
-            </p>
-          </div>
-        </div>
-        {badge && <Badge variant="panel-level" className="shrink-0">{badge.name}</Badge>}
+      {badge && <Badge variant="panel-level" className="absolute right-6 top-6">{badge.name}</Badge>}
+
+      <Avatar name={counsel.fullName} src={counsel.image?.url} alt={counsel.image?.alt} size="lg" />
+
+      <div className="mt-5">
+        <h3 className="line-clamp-2 font-serif text-xl font-medium leading-snug text-ink">{counsel.fullName}</h3>
+        <p className="mt-2 font-mono text-[11px] uppercase tracking-[0.12em] text-ink-3">
+          {counsel.yearOfCall != null ? `Called ${counsel.yearOfCall} · ` : ""}
+          {capacityLabel(counsel.practiceCapacity)}
+        </p>
       </div>
 
-      <div className="mt-6 flex items-center justify-between gap-3 border-t border-line-2 pt-4">
+      <div className="mt-6 flex items-center justify-between gap-3">
         {primaryArea ? <Badge variant="specialism">{primaryArea.name}</Badge> : <span />}
         <span className="shrink-0 font-mono text-[11px] uppercase tracking-[0.1em] text-ink-3 opacity-0 transition-opacity duration-[var(--motion-ui)] group-hover:opacity-100">
           View profile →

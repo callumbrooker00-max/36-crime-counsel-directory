@@ -1,16 +1,12 @@
 "use client";
 
-import * as React from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/toast";
 import { ProfileHeader } from "./profile-header";
 import { PanelBadgeList } from "./panel-badge-list";
 import { SpecialismList } from "./specialism-list";
 import { NotableCasesList } from "./notable-cases-list";
 import { CredentialsRail } from "./credentials-rail";
 import { SectionLabel } from "./section-label";
-import { EnquirySheet } from "./enquiry-sheet";
 import type { DirectoryCounsel } from "@/types/directory";
 
 function profileHost(url: string): string {
@@ -21,28 +17,11 @@ function profileHost(url: string): string {
   }
 }
 
-export function ProfileView({
-  counsel,
-  caseTypes,
-}: {
-  counsel: DirectoryCounsel;
-  caseTypes: { value: string; label: string }[];
-}) {
+export function ProfileView({ counsel }: { counsel: DirectoryCounsel }) {
   const router = useRouter();
-  const { toast } = useToast();
-  const [enquiryOpen, setEnquiryOpen] = React.useState(false);
-
-  async function share() {
-    try {
-      await navigator.clipboard.writeText(window.location.href);
-      toast({ title: "Link copied" });
-    } catch {
-      toast({ title: "Couldn't copy link" });
-    }
-  }
 
   return (
-    <main className="mx-auto w-full max-w-[1200px] px-5 pb-28 sm:px-8 lg:px-12 lg:pb-20">
+    <main className="mx-auto w-full max-w-[1200px] px-5 pb-20 sm:px-8 lg:px-12">
       <div className="py-6">
         <button
           onClick={() => router.back()}
@@ -80,24 +59,10 @@ export function ProfileView({
 
         <aside className="hidden w-[340px] shrink-0 lg:block">
           <div className="sticky top-8">
-            <CredentialsRail counsel={counsel} onContact={() => setEnquiryOpen(true)} onShare={share} />
+            <CredentialsRail counsel={counsel} />
           </div>
         </aside>
       </div>
-
-      {/* Mobile/tablet: CTA pinned in thumb reach (wireframe screen 03). */}
-      <div className="fixed inset-x-0 bottom-0 z-20 border-t border-line bg-paper/90 p-3 backdrop-blur-xl lg:hidden">
-        <Button variant="primary" size="md" className="w-full" onClick={() => setEnquiryOpen(true)}>
-          Contact clerks
-        </Button>
-      </div>
-
-      <EnquirySheet
-        open={enquiryOpen}
-        onOpenChange={setEnquiryOpen}
-        counsel={{ id: counsel.id, fullName: counsel.fullName }}
-        caseTypes={caseTypes}
-      />
     </main>
   );
 }

@@ -18,15 +18,19 @@
   --color-neutral-200: #e6e5e0;
   --color-neutral-300: #d9d8d2;
   --color-neutral-400: #cbcac3;
-  --color-ribbon: #a81c30; /* THE accent — brief-ribbon red; one focal thing per view */
-  --color-ribbon-hover: #8f1728;
-  --color-ribbon-active: #7c1423;
-  --color-ribbon-soft: #f1dde0; /* accent wash — active pill fill, focus tint */
-  --color-focus: rgba(168, 28, 48, 0.4); /* focus ring — ribbon @ 40% */
+  /* THE accent — 36's brand teal; one focal thing per view (logo, primary
+     action, panel-level badge). Rationed, never decorative. */
+  --color-ribbon: #006577; /* base teal — 6.6:1 on paper, AA for text + fills */
+  --color-ribbon-hover: #00505e; /* darker teal — hover + small text on light (≈8.4:1) */
+  --color-ribbon-active: #013e49; /* pressed */
+  --color-ribbon-soft: #dcebed; /* teal wash — active pill fill, badge bg (text stays ≥5.3:1) */
+  --color-focus: rgba(0, 101, 119, 0.4); /* focus ring — teal @ 40% */
 
-  /* ---- Type ---- */
-  --font-sans: var(--font-inter);
-  --font-serif: var(--font-spectral);
+  /* ---- Type ---- Fraunces (display, characterful editorial serif) + Hanken
+     Grotesk (humanist UI sans) + IBM Plex Mono (meta). Off the templated
+     Spectral/Inter default. */
+  --font-sans: var(--font-hanken);
+  --font-serif: var(--font-fraunces);
   --font-mono: var(--font-ibm-plex-mono);
   /* Scale (components.md §1.2). Headings tighten as they grow. */
   --text-xs: 0.75rem;
@@ -48,8 +52,8 @@
 
   /* ---- Radius ---- (pills/badges use rounded-full) */
   --radius-control: 10px; /* inputs, buttons */
-  --radius-card: 16px; /* cards, surfaces */
-  --radius-lg: 24px; /* large surfaces / hero */
+  --radius-card: 18px; /* cards, surfaces — a touch softer, less boxy */
+  --radius-lg: 26px; /* large surfaces / hero */
 
   /* ---- Elevation ---- soft, layered shadows for depth (Apple/Linear register) */
   --shadow-card: 0 1px 2px rgba(23, 23, 27, 0.04), 0 2px 8px rgba(23, 23, 27, 0.04);
@@ -72,7 +76,7 @@
 body {
   background: var(--color-paper);
   color: var(--color-ink);
-  font-family: var(--font-inter), system-ui, sans-serif;
+  font-family: var(--font-hanken), system-ui, sans-serif;
 }
 
 /* ---------- keyframes ---------- */

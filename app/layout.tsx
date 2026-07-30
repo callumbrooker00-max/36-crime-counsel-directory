@@ -1,18 +1,20 @@
 import type { Metadata } from "next";
-import { Spectral, Inter, IBM_Plex_Mono } from "next/font/google";
+import { Fraunces, Hanken_Grotesk, IBM_Plex_Mono } from "next/font/google";
 import { Toaster } from "@/components/ui/toast";
 import "./globals.css";
 
 // Self-hosted at build by next/font — no runtime CDN request (see CLAUDE.md).
-const spectral = Spectral({
-  variable: "--font-spectral",
+// Fraunces: characterful editorial serif for display — headings + the wordmark
+// register; the optical-size axis keeps large sizes elegant.
+const fraunces = Fraunces({
+  variable: "--font-fraunces",
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
   display: "swap",
 });
 
-const inter = Inter({
-  variable: "--font-inter",
+// Hanken Grotesk: humanist UI sans — warmer and less templated than Inter.
+const hanken = Hanken_Grotesk({
+  variable: "--font-hanken",
   subsets: ["latin"],
   display: "swap",
 });
@@ -39,7 +41,7 @@ export default function RootLayout({
   return (
     <html
       lang="en-GB"
-      className={`${spectral.variable} ${inter.variable} ${ibmPlexMono.variable} h-full antialiased`}
+      className={`${fraunces.variable} ${hanken.variable} ${ibmPlexMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <Toaster>{children}</Toaster>

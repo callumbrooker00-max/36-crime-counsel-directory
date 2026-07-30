@@ -31,9 +31,8 @@ export async function generateMetadata({
 export default async function ProfilePage({ params }: { params: Promise<{ slug: string }> }) {
   if (!isPermitted(await clientAccessStatus())) redirect("/access");
   const { slug } = await params;
-  const { payload, counsel } = await findCounsel(slug);
+  const { counsel } = await findCounsel(slug);
   if (!counsel) notFound();
 
-  const caseTypes = payload.filters.practiceAreas.map((a) => ({ value: a.name, label: a.name }));
-  return <ProfileView counsel={counsel} caseTypes={caseTypes} />;
+  return <ProfileView counsel={counsel} />;
 }

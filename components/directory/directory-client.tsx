@@ -2,6 +2,8 @@
 
 import * as React from "react";
 import Link from "next/link";
+import Image from "next/image";
+import logo from "@/public/logo.png";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { applyFilters } from "@/lib/directory/filter";
 import {
@@ -86,8 +88,9 @@ export function DirectoryClient({ payload }: { payload: DirectoryPayload }) {
     <div className="mx-auto w-full max-w-[1600px] px-5 sm:px-8 lg:px-12">
       <header className="sticky top-0 z-20 -mx-5 border-b border-line/80 bg-paper/75 px-5 backdrop-blur-xl sm:-mx-8 sm:px-8 lg:-mx-12 lg:px-12">
         <div className="flex items-center gap-4 py-4">
-          <Link href="/" className="shrink-0 font-serif text-lg font-semibold tracking-tight text-ink">
-            36 <span className="text-ink-3">·</span> Crime
+          {/* Brand wordmark — the supplied 36 Crime logo (transparent PNG). */}
+          <Link href="/" aria-label="36 Crime — home" className="shrink-0">
+            <Image src={logo} alt="36 Crime" priority className="h-7 w-auto" />
           </Link>
           <SearchInput value={q} onChange={onSearch} className="mx-auto w-full max-w-xl flex-1" />
           <div className="ml-auto flex items-center gap-3">

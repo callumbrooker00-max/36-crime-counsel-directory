@@ -11,13 +11,13 @@ const avatarVariants = cva(
     variants: {
       size: {
         sm: "size-7 text-xs", // dense lists
-        md: "size-11 text-sm", // cards
-        lg: "size-16 text-md",
-        xl: "size-28 text-2xl", // profile hero
+        md: "size-11 text-sm", // admin lists
+        lg: "size-[76px] text-xl", // directory cards — prominent headshot
+        xl: "size-[144px] text-3xl", // profile hero
       },
       // Rounded for headshots on a profile; circular in dense lists.
       shape: {
-        rounded: "rounded-[14px]",
+        rounded: "rounded-[16px]",
         circle: "rounded-full",
       },
     },
