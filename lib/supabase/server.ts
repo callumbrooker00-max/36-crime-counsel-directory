@@ -8,6 +8,15 @@ export async function createClient() {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
+      // Auth is server-side only (nothing imports the browser client), so the
+      // session cookies can be httpOnly — unreadable to JS, blunting XSS token
+      // theft. Secure in production; SameSite=Lax to survive the magic-link
+      // top-level redirect back from Supabase.
+      cookieOptions: {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+      },
       cookies: {
         getAll() {
           return cookieStore.getAll();

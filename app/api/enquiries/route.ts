@@ -47,7 +47,7 @@ export async function POST(request: Request) {
   const data = parsed.data;
 
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
-  const limit = rateLimit(`enquiry:${ip}:${data.email.toLowerCase()}`);
+  const limit = await rateLimit(`enquiry:${ip}:${data.email.toLowerCase()}`);
   if (!limit.ok) {
     return NextResponse.json(
       { error: { code: "rate_limited", message: "That's a few enquiries now — try again in a minute." } },

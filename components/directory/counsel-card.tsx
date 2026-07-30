@@ -6,7 +6,6 @@ import type { DirectoryCounsel } from "@/types/directory";
 
 export function CounselCard({ counsel }: { counsel: DirectoryCounsel }) {
   const badge = topPanelBadge(counsel);
-  const primaryArea = counsel.practiceAreas.find((a) => a.isPrimary) ?? counsel.practiceAreas[0];
 
   return (
     <Link
@@ -25,9 +24,10 @@ export function CounselCard({ counsel }: { counsel: DirectoryCounsel }) {
         </p>
       </div>
 
-      <div className="mt-6 flex items-center justify-between gap-3">
-        {primaryArea ? <Badge variant="specialism">{primaryArea.name}</Badge> : <span />}
-        <span className="shrink-0 font-mono text-[11px] uppercase tracking-[0.1em] text-ink-3 opacity-0 transition-opacity duration-[var(--motion-ui)] group-hover:opacity-100">
+      {/* Specialism pill intentionally omitted — counsel hold many specialisms;
+          showing one on the card is misleading. Full list lives on the profile. */}
+      <div className="mt-6 flex justify-end">
+        <span className="font-mono text-[11px] uppercase tracking-[0.1em] text-ink-3 transition-colors duration-[var(--motion-ui)] group-hover:text-ink">
           View profile →
         </span>
       </div>
