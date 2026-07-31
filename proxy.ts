@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
+import { CLIENT_COOKIE, verifySession } from "@/lib/auth/client-session";
 
 export const config = { matcher: ["/", "/counsel/:path*", "/admin/:path*"] };
 
@@ -21,12 +22,13 @@ export async function proxy(request: NextRequest) {
     return response;
   }
 
-  // --- Client portal pages: require a session when the gate is on (true 307
-  //     before the page renders). The allowlist re-check + API 401s live in the
-  //     server entrypoints. ---
+  // --- Client portal pages: require a valid access-code session when the gate
+  //     is on (true 307 before the page renders). Signature check only here;
+  //     the authoritative revoked-row re-check + API 401s live in the server
+  //     entrypoints (clientAccessStatus). ---
   if (gateActive) {
-    const { user } = await updateSession(request);
-    if (!user) return NextResponse.redirect(new URL("/access", request.url));
+    const session = await verifySession(request.cookies.get(CLIENT_COOKIE)?.value);
+    if (!session) return NextResponse.redirect(new URL("/access", request.url));
   }
 
   // --- Counsel profiles: strict 404 for unknown/unpublished/archived slugs ---

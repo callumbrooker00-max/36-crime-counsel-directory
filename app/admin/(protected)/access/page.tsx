@@ -17,16 +17,16 @@ export default async function AccessPage() {
 
   const { data } = await supabase
     .from("client_access")
-    .select("id, label, email, domain, issued_at, last_used_at, revoked_at")
+    .select("id, label, code, issued_at, last_used_at, revoked_at")
     .eq("chambers_id", ctx.chambersId)
+    .not("code", "is", null)
     .order("revoked_at", { ascending: true, nullsFirst: true })
     .order("issued_at", { ascending: false });
 
   const rows: AccessRow[] = (data ?? []).map((r) => ({
     id: r.id,
     label: r.label,
-    matcher: r.email ?? r.domain ?? "",
-    kind: r.email ? "email" : "domain",
+    code: r.code ?? "",
     issuedAt: r.issued_at,
     lastUsedAt: r.last_used_at,
     revoked: r.revoked_at !== null,
