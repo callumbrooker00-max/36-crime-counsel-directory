@@ -3,7 +3,20 @@ import { signOut } from "@/lib/admin/auth-actions";
 
 // Quieter, more utilitarian than the client side — the shift in tone signals
 // back-of-house (wireframe 06/07).
-export function AdminShell({ email, children }: { email: string; children: React.ReactNode }) {
+// Client-access management is admin-tier (mirrors client_access RLS); clerks
+// don't see the nav item.
+const ADMIN_ROLES = ["chambers_admin", "platform_admin"];
+
+export function AdminShell({
+  email,
+  role,
+  children,
+}: {
+  email: string;
+  role: string;
+  children: React.ReactNode;
+}) {
+  const isAdmin = ADMIN_ROLES.includes(role);
   return (
     <div className="min-h-dvh">
       <header className="border-b border-line bg-card">
@@ -18,6 +31,11 @@ export function AdminShell({ email, children }: { email: string; children: React
             <Link href="/admin/taxonomy" className="rounded-control px-2 py-1 text-ink-2 hover:bg-neutral-100 hover:text-ink">
               Taxonomy
             </Link>
+            {isAdmin && (
+              <Link href="/admin/access" className="rounded-control px-2 py-1 text-ink-2 hover:bg-neutral-100 hover:text-ink">
+                Client access
+              </Link>
+            )}
           </nav>
           <div className="ml-auto flex items-center gap-3 text-sm text-ink-3">
             <span className="hidden sm:inline">{email}</span>
