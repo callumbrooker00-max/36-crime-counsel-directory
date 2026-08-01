@@ -12,8 +12,7 @@ cold in three months, start here.
 
 ## Where everything lives
 
-- **The site (Production):** TODO — confirm the Vercel URL (likely
-  `https://36-crime-counsel-directory.vercel.app`, plus any custom domain).
+- **The site (Production):** https://36-crime-counsel-directory.vercel.app
   Deploys automatically from the `main` branch on GitHub.
 - **Preview deploys:** every branch / PR gets its own temporary Vercel URL. Safe
   to poke at; not the real thing.
@@ -39,7 +38,9 @@ use a password. Nothing here depends on email being deliverable.
 Admins are people with an **active membership** in the chambers at role
 `clerk`, `chambers_admin`, or `platform_admin`.
 
-- **TODO — list the real admins** (name → email → role). Known: `callumbrooker00@gmail.com`.
+- **Admins:**
+  - Callum Brooker — callum@36group.co.uk
+  - Jack — Jack@36crime.co.uk
 - Two permission tiers to know:
   - **Clerk** can edit member/taxonomy content.
   - **Chambers admin / platform admin** can *also* manage client access codes
@@ -109,7 +110,7 @@ shows under both Local and Remote once applied).
 
 ```bash
 # Is the directory API correctly refusing without a session? (gate must be on)
-curl -i https://YOUR-PROD-URL/api/directory      # expect HTTP 401
+curl -i https://36-crime-counsel-directory.vercel.app/api/directory   # expect HTTP 401
 ```
 
 The whole site is `noindex` on purpose — it must never show up in search results.
