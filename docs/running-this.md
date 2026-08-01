@@ -5,9 +5,6 @@ going. Not the build spec (that's the other files in `/docs`) — this is "how d
 actually do the day-to-day thing" for an admin or a clerk. If you're reading this
 cold in three months, start here.
 
-> Fill in the **TODO** bits below — they're the few things that live outside the
-> code (URLs, people) and can't be auto-verified.
-
 ---
 
 ## Where everything lives
