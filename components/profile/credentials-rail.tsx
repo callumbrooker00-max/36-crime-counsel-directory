@@ -1,4 +1,4 @@
-import { capacityLabel, topPanelBadge } from "@/lib/directory/display";
+import { topPanelBadge } from "@/lib/directory/display";
 import { SectionLabel } from "./section-label";
 import type { DirectoryCounsel } from "@/types/directory";
 
@@ -16,12 +16,8 @@ export function CredentialsRail({ counsel }: { counsel: DirectoryCounsel }) {
             <dd className="font-serif text-md text-ink">{badge.name}</dd>
           </div>
         )}
-        <div className="flex items-center justify-between gap-3 py-3 first:pt-0">
-          <dt className="text-sm text-ink-3">Capacity</dt>
-          <dd className="font-serif text-md text-ink">{capacityLabel(counsel.practiceCapacity)}</dd>
-        </div>
         {counsel.yearOfCall != null && (
-          <div className="flex items-center justify-between gap-3 py-3 last:pb-0">
+          <div className="flex items-center justify-between gap-3 py-3 first:pt-0 last:pb-0">
             <dt className="text-sm text-ink-3">Year of call</dt>
             <dd className="font-serif text-md text-ink">{counsel.yearOfCall}</dd>
           </div>

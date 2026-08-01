@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { capacityLabel, topPanelBadge } from "@/lib/directory/display";
+import { topPanelBadge } from "@/lib/directory/display";
 import type { DirectoryCounsel } from "@/types/directory";
 
 export function CounselCard({ counsel }: { counsel: DirectoryCounsel }) {
@@ -18,10 +18,11 @@ export function CounselCard({ counsel }: { counsel: DirectoryCounsel }) {
 
       <div className="mt-5">
         <h3 className="line-clamp-2 font-serif text-xl font-medium leading-snug text-ink">{counsel.fullName}</h3>
-        <p className="mt-2 font-mono text-[11px] uppercase tracking-[0.12em] text-ink-3">
-          {counsel.yearOfCall != null ? `Called ${counsel.yearOfCall} · ` : ""}
-          {capacityLabel(counsel.practiceCapacity)}
-        </p>
+        {counsel.yearOfCall != null && (
+          <p className="mt-2 font-mono text-[11px] uppercase tracking-[0.12em] text-ink-3">
+            Called {counsel.yearOfCall}
+          </p>
+        )}
       </div>
 
       {/* Specialism pill intentionally omitted — counsel hold many specialisms;
