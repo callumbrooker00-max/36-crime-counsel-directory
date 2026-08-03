@@ -286,7 +286,7 @@ export function MemberEditor({ member, vocab }: { member: EditorMember; vocab: E
             </div>
           </Section>
 
-          <Section label="Notable cases">
+          <Section label="Recent and forthcoming cases">
             {cases.map((c, i) => (
               <div key={i} className="flex flex-col gap-2 rounded-control border border-line p-3">
                 <Input label="Title" value={c.title} onChange={(e) => { setCases(cases.map((row, j) => (j === i ? { ...row, title: e.target.value } : row))); mark(); }} />
