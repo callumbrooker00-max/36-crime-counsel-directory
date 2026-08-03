@@ -5,7 +5,7 @@ export function NotableCasesList({ cases }: { cases: CounselNotableCase[] }) {
   if (!cases.length) return null; // omit the section entirely — no "N/A"
   return (
     <section>
-      <SectionLabel>Notable cases</SectionLabel>
+      <SectionLabel>Recent and forthcoming cases</SectionLabel>
       <ul className="flex flex-col divide-y divide-line-2">
         {cases.map((c, i) => {
           const meta = [c.roleInCase, c.year?.toString(), c.court].filter(Boolean).join(" · ");
